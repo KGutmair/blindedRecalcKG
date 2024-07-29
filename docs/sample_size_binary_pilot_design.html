@@ -1,0 +1,1150 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.450">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>R package blindrecalc for blinded sample size recalculation with internal pilot studies for a depression trial</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="sample_size_binary_pilot_design_files/libs/clipboard/clipboard.min.js"></script>
+<script src="sample_size_binary_pilot_design_files/libs/quarto-html/quarto.js"></script>
+<script src="sample_size_binary_pilot_design_files/libs/quarto-html/popper.min.js"></script>
+<script src="sample_size_binary_pilot_design_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="sample_size_binary_pilot_design_files/libs/quarto-html/anchor.min.js"></script>
+<link href="sample_size_binary_pilot_design_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="sample_size_binary_pilot_design_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="sample_size_binary_pilot_design_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="sample_size_binary_pilot_design_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="sample_size_binary_pilot_design_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<link href="sample_size_binary_pilot_design_files/libs/tabwid-1.1.3/tabwid.css" rel="stylesheet">
+<script src="sample_size_binary_pilot_design_files/libs/tabwid-1.1.3/tabwid.js"></script>
+
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">R package blindrecalc for blinded sample size recalculation with internal pilot studies for a depression trial</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<section id="introduction-to-the-package-blindrecalc" class="level2">
+<h2 class="anchored" data-anchor-id="introduction-to-the-package-blindrecalc">Introduction to the package blindrecalc</h2>
+<ul>
+<li>R package for blinded sample size recalculation</li>
+<li>Authors: Lukas Baumann, Maximilian Pilz and Meinhard Kieser</li>
+<li>Published: March 2022</li>
+<li>Features of the package:
+<ul>
+<li>Blinded sample size recalculation for Chi square, Farrington Manning, Student t test</li>
+<li>Computation of the actual type I error rate for different values of the nuisance parameter</li>
+<li>Calculation of the achieved power under a given set of nuisance parameters</li>
+<li>Sample size distribution for different values of the nuisance parameter</li>
+</ul></li>
+</ul>
+<section id="table-of-content" class="level3">
+<h3 class="anchored" data-anchor-id="table-of-content">Table of content</h3>
+<ol type="1">
+<li>Examples of sample size calculation
+<ol type="a">
+<li>Test for superiority with delta = 0.15, r = 1:1</li>
+<li>Test for superiority with delta = 0.15, r = 3:1</li>
+<li>Test for superiority with delta = 0.3, r = 1:1</li>
+<li>Test for superiority with delta = 0.3, r = 3:1</li>
+</ol></li>
+<li>Comparison of actual alpha levels, adjusted alpha levels, and power for different designs and nuisance parameters
+<ol type="a">
+<li>Actual alpha level for different values of the nuisance parameter</li>
+<li>Adjustment of the nominal alpha level</li>
+<li>Power for different values of the nuisance parameter</li>
+<li>Distribution of the total sample sizes for different values of the nuisance parameter or of n1</li>
+</ol></li>
+</ol>
+</section>
+<section id="examples" class="level3">
+<h3 class="anchored" data-anchor-id="examples">1. Examples</h3>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>main_path <span class="ot">&lt;-</span> <span class="st">"C:/Users/katja.gutmair/Documents/sample_size"</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">#install.packages("blindrecalc")</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"blindrecalc"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code>Warning: Paket 'blindrecalc' wurde unter R Version 4.3.3 erstellt</code></pre>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(patchwork)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(flextable)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code>Warning: Paket 'flextable' wurde unter R Version 4.3.2 erstellt</code></pre>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="a-example-delta-0.15-and-allocation-ratio-11" class="level3">
+<h3 class="anchored" data-anchor-id="a-example-delta-0.15-and-allocation-ratio-11">a, Example: Delta = 0.15 and allocation ratio 1:1</h3>
+<section id="step-1-planning-phase" class="level4">
+<h4 class="anchored" data-anchor-id="step-1-planning-phase">Step 1: Planning phase</h4>
+</section>
+<section id="calculation-of-initial-sample-size-𝒏_𝟎-based-on-trial-specification-and-current-knowledge-of-nuisance-parameters-𝒏𝒑_𝟎." class="level4">
+<h4 class="anchored" data-anchor-id="calculation-of-initial-sample-size-𝒏_𝟎-based-on-trial-specification-and-current-knowledge-of-nuisance-parameters-𝒏𝒑_𝟎.">1.1 Calculation of initial sample size 𝒏_𝟎 based on trial specification and current knowledge of nuisance parameters 𝒏𝒑_𝟎.</h4>
+<ul>
+<li>alpha = 0.025 (one-sided)</li>
+<li>1-beta (Power) = 0.8 delta = 0.15</li>
+<li>Proportion of responders in the placebo group: 0.15</li>
+<li>Allocation ratio: 1:1</li>
+</ul>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>delta <span class="ot">=</span> <span class="fl">0.15</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>p_c <span class="ot">&lt;-</span> <span class="fl">0.15</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>r <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>p_e <span class="ot">&lt;-</span> delta <span class="sc">+</span> p_c</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>p_a <span class="ot">&lt;-</span> (p_c <span class="sc">+</span> r <span class="sc">*</span> p_e)<span class="sc">/</span>(<span class="dv">1</span><span class="sc">+</span>r)</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">paste0</span>(<span class="st">"Overall response rate nuisance parameter: "</span>, p_a))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>[1] “Overall response rate nuisance parameter: 0.225”</p>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>design <span class="ot">&lt;-</span> <span class="fu">setupChiSquare</span>(<span class="at">alpha =</span> <span class="fl">0.025</span>, <span class="at">beta =</span> <span class="fl">0.2</span>, <span class="at">r =</span> <span class="dv">1</span>,  <span class="at">delta =</span> <span class="fl">0.15</span>)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>n_0_r1 <span class="ot">&lt;-</span> <span class="fu">n_fix</span>(<span class="at">design =</span> design, <span class="at">nuisance =</span> p_a, <span class="st">"heterogeneous"</span>, <span class="at">alternative =</span> <span class="st">"greater"</span>, </span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>                <span class="at">rounded =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">paste0</span>(<span class="st">"initial fixed sample size: "</span>, n_0_r1))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>[1] “initial fixed sample size: 242”</p>
+</section>
+<section id="definition-after-which-proportion-𝝅-of-patients-a-sample-size-recalculation-will-be-conducted-𝒏_𝟏-𝝅-𝒏_𝟎" class="level4">
+<h4 class="anchored" data-anchor-id="definition-after-which-proportion-𝝅-of-patients-a-sample-size-recalculation-will-be-conducted-𝒏_𝟏-𝝅-𝒏_𝟎">1.2 Definition after which proportion 𝝅 of patients a sample size recalculation will be conducted: 𝒏_𝟏= 𝝅∗ 𝒏_𝟎</h4>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>(n_1_r1 <span class="ot">&lt;-</span> <span class="fl">0.5</span><span class="sc">*</span>n_0_r1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>[1] 121</p>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">paste0</span>(<span class="st">"Recalculatio after: "</span>, n_1_r1))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>[1] “Recalculatio after: 121”</p>
+</section>
+<section id="reestimation-of-nuisance-parameter-𝒏𝒑-based-on-𝒏_𝟏-patients." class="level4">
+<h4 class="anchored" data-anchor-id="reestimation-of-nuisance-parameter-𝒏𝒑-based-on-𝒏_𝟏-patients.">2.1: Reestimation of nuisance parameter 𝒏𝒑 based on 𝒏_𝟏 patients.</h4>
+<p>Overall response rate (calculated from the data): p=0.467</p>
+</section>
+<section id="reestimation-of-the-sample-size-n_recalc" class="level4">
+<h4 class="anchored" data-anchor-id="reestimation-of-the-sample-size-n_recalc">2.2 Reestimation of the sample size n_recalc</h4>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>n_recalc_r1 <span class="ot">&lt;-</span> <span class="fu">n_fix</span>(<span class="at">design =</span> design, <span class="at">nuisance =</span> <span class="fl">0.467</span>, <span class="st">"heterogeneous"</span>, <span class="at">alternative =</span> <span class="st">"smaller"</span>)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">paste0</span>(<span class="st">"recalculated sample size: "</span>, n_recalc_r1))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>[1] “recalculated sample size: 346”</p>
+</section>
+<section id="adjustment-of-the-sample-size-according-to-a-pre-specified-rule-to-obtain-the-final-total-sample-size" class="level4">
+<h4 class="anchored" data-anchor-id="adjustment-of-the-sample-size-according-to-a-pre-specified-rule-to-obtain-the-final-total-sample-size">2.3 Adjustment of the sample size according to a pre-specified rule to obtain the final total sample size</h4>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Restricted design</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>restricted_r1 <span class="ot">&lt;-</span> <span class="fu">max</span>(n_0_r1, n_recalc_r1)</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="co">#Unrestricted design</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>unrestricted_r1 <span class="ot">&lt;-</span> <span class="fu">max</span>(n_1_r1, n_recalc_r1)</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Unrestricted design with upper boundary</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>unrestr_max_bound_r1 <span class="ot">&lt;-</span> <span class="fu">min</span>(<span class="fu">max</span>(n_1_r1, n_recalc_r1), <span class="dv">300</span>)</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>result_1 <span class="ot">&lt;-</span> <span class="fu">c</span>(n_0_r1, n_1_r1, n_recalc_r1,restricted_r1, unrestricted_r1, unrestr_max_bound_r1)</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(result_1) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"initial sample size"</span>, <span class="st">"Recalculation after"</span>, <span class="st">"Recalculated sample size"</span>, <span class="st">"restricted design"</span>, <span class="st">"unrestricted design"</span>, <span class="st">"unrestricted design with upper bound"</span>)</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a><span class="fu">as.data.frame</span>(result_1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code>                                 result_1</code></pre>
+<p>initial sample size 242 Recalculation after 121 Recalculated sample size 346 restricted design 346 unrestricted design 346 unrestricted design with upper bound 300</p>
+</section>
+<section id="examination-of-the-actual-alpha-level-and-power" class="level4">
+<h4 class="anchored" data-anchor-id="examination-of-the-actual-alpha-level-and-power">Examination of the actual alpha level and power</h4>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># actual alpha level</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>design <span class="ot">&lt;-</span> <span class="fu">setupChiSquare</span>(<span class="at">alpha =</span> <span class="fl">0.025</span>, <span class="at">beta =</span> <span class="fl">0.2</span>, <span class="at">r =</span> <span class="dv">1</span>, <span class="at">delta =</span> <span class="fl">0.15</span>,</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>                         <span class="at">alternative =</span> <span class="st">"greater"</span>)</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>actual_alpha_fixed <span class="ot">&lt;-</span> <span class="fu">toer</span>(<span class="at">design =</span> design, <span class="at">n1 =</span> <span class="dv">242</span>, <span class="at">nuisance =</span> <span class="fl">0.225</span>, </span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>                <span class="at">recalculation =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>recalc_alpha_fixed <span class="ot">&lt;-</span> <span class="fu">toer</span>(<span class="at">design =</span> design, <span class="at">n1 =</span> <span class="dv">122</span>,  <span class="at">nuisance =</span> <span class="fl">0.225</span>, </span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>                 <span class="at">recalculation =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>adj_level_fixed <span class="ot">&lt;-</span> <span class="fu">adjusted_alpha</span>(<span class="at">design =</span> design, <span class="at">n1 =</span> <span class="dv">242</span>, <span class="at">nuisance =</span> <span class="fl">0.225</span>, <span class="at">precision =</span> <span class="fl">0.001</span>, <span class="at">nuis_ass =</span> <span class="fl">0.225</span>, <span class="at">recalculation =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>adj_level_recalc <span class="ot">&lt;-</span> <span class="fu">adjusted_alpha</span>(<span class="at">design =</span> design, <span class="at">n1 =</span> <span class="dv">122</span>, <span class="at">nuisance =</span> <span class="fl">0.225</span>, <span class="at">precision =</span> <span class="fl">0.001</span>, <span class="at">recalculation =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Power</span></span>
+<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a>power_fixed_r1 <span class="ot">&lt;-</span> <span class="fu">pow</span>(<span class="at">design =</span> design, <span class="at">n1 =</span> <span class="dv">242</span>, <span class="at">nuisance =</span> <span class="fl">0.225</span>, <span class="at">recalculation =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a>power_recalc_r1 <span class="ot">&lt;-</span> <span class="fu">pow</span>(<span class="at">design =</span> design, <span class="at">n1 =</span> <span class="dv">122</span>, <span class="at">nuisance =</span> <span class="fl">0.225</span>, <span class="at">recalculation =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-25"><a href="#cb13-25" aria-hidden="true" tabindex="-1"></a>examination_15_r1 <span class="ot">&lt;-</span> <span class="fu">round</span>(<span class="fu">c</span>(actual_alpha_fixed, recalc_alpha_fixed, adj_level_fixed, adj_level_recalc, power_fixed_r1, power_recalc_r1), <span class="dv">3</span>)</span>
+<span id="cb13-26"><a href="#cb13-26" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(examination_15_r1) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Actual alpha level fixed"</span>, <span class="st">"Actual alpha level recalculation"</span>, <span class="st">"Adjusted alpha level fixed"</span>, <span class="st">"Adjusted alpha level recalculation"</span>, <span class="st">"Power fixed"</span>, <span class="st">"Power recalculation"</span>)</span>
+<span id="cb13-27"><a href="#cb13-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-28"><a href="#cb13-28" aria-hidden="true" tabindex="-1"></a><span class="fu">as.data.frame</span>(examination_15_r1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code>                               examination_15_r1</code></pre>
+<p>Actual alpha level fixed 0.025 Actual alpha level recalculation 0.025 Adjusted alpha level fixed 0.024 Adjusted alpha level recalculation 0.025 Power fixed 0.809 Power recalculation 0.794</p>
+</section>
+</section>
+<section id="b.-example-delta-0.15-and-allocation-ratio-31" class="level3">
+<h3 class="anchored" data-anchor-id="b.-example-delta-0.15-and-allocation-ratio-31">b. Example: Delta = 0.15 and allocation ratio 3:1</h3>
+<section id="step-1-planning-phase-1" class="level4">
+<h4 class="anchored" data-anchor-id="step-1-planning-phase-1">Step 1: Planning phase</h4>
+</section>
+<section id="calculation-of-initial-sample-size-𝒏_𝟎-based-on-trial-specification-and-current-knowledge-of-nuisance-parameters-𝒏𝒑_𝟎.-1" class="level4">
+<h4 class="anchored" data-anchor-id="calculation-of-initial-sample-size-𝒏_𝟎-based-on-trial-specification-and-current-knowledge-of-nuisance-parameters-𝒏𝒑_𝟎.-1">1.1 Calculation of initial sample size 𝒏_𝟎 based on trial specification and current knowledge of nuisance parameters 𝒏𝒑_𝟎.</h4>
+<ul>
+<li>alpha = 0.025 (one-sided)</li>
+<li>1-beta (Power) = 0.8 delta = 0.15</li>
+<li>Proportion of responders of the placebo group: 0.15</li>
+<li>Allocation ratio: 3:1</li>
+</ul>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>delta <span class="ot">=</span> <span class="fl">0.15</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>p_c <span class="ot">&lt;-</span> <span class="fl">0.15</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>r <span class="ot">&lt;-</span> <span class="dv">3</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>p_e <span class="ot">&lt;-</span> delta <span class="sc">+</span> p_c</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>p_a <span class="ot">&lt;-</span> (p_c <span class="sc">+</span> r <span class="sc">*</span> p_e)<span class="sc">/</span>(<span class="dv">1</span><span class="sc">+</span>r)</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">paste0</span>(<span class="st">"Overall response rate nuisance parameter: "</span>, p_a))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>[1] “Overall response rate nuisance parameter: 0.2625”</p>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>design <span class="ot">&lt;-</span> <span class="fu">setupChiSquare</span>(<span class="at">alpha =</span> <span class="fl">0.025</span>, <span class="at">beta =</span> <span class="fl">0.2</span>, <span class="at">r =</span> <span class="dv">3</span>,  <span class="at">delta =</span> <span class="fl">0.15</span>)</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>n_0_r3 <span class="ot">&lt;-</span> <span class="fu">n_fix</span>(<span class="at">design =</span> design, <span class="at">nuisance =</span> p_a, <span class="st">"heterogeneous"</span>, <span class="at">alternative =</span> <span class="st">"greater"</span>)</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">paste0</span>(<span class="st">"initial fixed sample size: "</span>, n_0_r3))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>[1] “initial fixed sample size: 336”</p>
+</section>
+<section id="definition-after-which-proportion-𝝅-of-patients-a-sample-size-recalculation-will-be-conducted-𝒏_𝟏-𝝅-𝒏_𝟎-1" class="level4">
+<h4 class="anchored" data-anchor-id="definition-after-which-proportion-𝝅-of-patients-a-sample-size-recalculation-will-be-conducted-𝒏_𝟏-𝝅-𝒏_𝟎-1">1.2 Definition after which proportion 𝝅 of patients a sample size recalculation will be conducted: 𝒏_𝟏= 𝝅∗ 𝒏_𝟎</h4>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(n_1_r3 <span class="ot">&lt;-</span> <span class="fl">0.5</span><span class="sc">*</span>n_0_r3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>[1] 168</p>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">paste0</span>(<span class="st">"Recalculatio after: "</span>, n_1_r3))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>[1] “Recalculatio after: 168”</p>
+</section>
+<section id="reestimation-of-nuisance-parameter-𝒏𝒑-based-on-𝒏_𝟏-patients.-1" class="level4">
+<h4 class="anchored" data-anchor-id="reestimation-of-nuisance-parameter-𝒏𝒑-based-on-𝒏_𝟏-patients.-1">2.1: Reestimation of nuisance parameter 𝒏𝒑 based on 𝒏_𝟏 patients.</h4>
+<p>Overall response rate (calculated from the data): p=0.467</p>
+</section>
+<section id="reestimation-of-the-sample-size-n_recalc-1" class="level4">
+<h4 class="anchored" data-anchor-id="reestimation-of-the-sample-size-n_recalc-1">2.2 Reestimation of the sample size n_recalc</h4>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>n_recalc_r3 <span class="ot">&lt;-</span> <span class="fu">n_fix</span>(<span class="at">design =</span> design, <span class="at">nuisance =</span> <span class="fl">0.467</span>, <span class="st">"heterogeneous"</span>, <span class="at">alternative =</span> <span class="st">"smaller"</span>)</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">paste0</span>(<span class="st">"recalculated sample size: "</span>, n_recalc_r3))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>[1] “recalculated sample size: 456”</p>
+</section>
+<section id="adjustment-of-the-sample-size-according-to-a-pre-specified-rule-to-obtain-the-final-total-sample-size-1" class="level4">
+<h4 class="anchored" data-anchor-id="adjustment-of-the-sample-size-according-to-a-pre-specified-rule-to-obtain-the-final-total-sample-size-1">2.3 Adjustment of the sample size according to a pre-specified rule to obtain the final total sample size</h4>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Restricted design</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>restricted_r3 <span class="ot">&lt;-</span> <span class="fu">max</span>(n_0_r3, n_recalc_r3)</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a><span class="co">#Unrestricted design</span></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>unrestricted_r3 <span class="ot">&lt;-</span> <span class="fu">max</span>(n_1_r3, n_recalc_r3)</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Unrestricted design with upper boundary</span></span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>unrestr_max_bound_r3 <span class="ot">&lt;-</span> <span class="fu">min</span>(<span class="fu">max</span>(n_1_r3, n_recalc_r3), <span class="dv">350</span>)</span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>result_2 <span class="ot">&lt;-</span> <span class="fu">c</span>(n_0_r3, n_1_r3, n_recalc_r3,restricted_r3, unrestricted_r3, unrestr_max_bound_r3)</span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(result_2) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"initial sample size"</span>, <span class="st">"Recalculation after"</span>, <span class="st">"Recalculated sample size"</span>, <span class="st">"restricted design"</span>, <span class="st">"unrestricted design"</span>, <span class="st">"unrestricted design with upper bound"</span>)</span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a><span class="fu">as.data.frame</span>(result_2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code>                                 result_2</code></pre>
+<p>initial sample size 336 Recalculation after 168 Recalculated sample size 456 restricted design 456 unrestricted design 456 unrestricted design with upper bound 350</p>
+</section>
+<section id="examination-of-the-actual-alpha-level-and-power-1" class="level4">
+<h4 class="anchored" data-anchor-id="examination-of-the-actual-alpha-level-and-power-1">Examination of the actual alpha level and power</h4>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># actual alpha level</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>design <span class="ot">&lt;-</span> <span class="fu">setupChiSquare</span>(<span class="at">alpha =</span> <span class="fl">0.025</span>, <span class="at">beta =</span> <span class="fl">0.2</span>, <span class="at">r =</span> <span class="dv">3</span>, <span class="at">delta =</span> <span class="fl">0.15</span>,</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>                         <span class="at">alternative =</span> <span class="st">"greater"</span>)</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>actual_alpha_fixed <span class="ot">&lt;-</span> <span class="fu">toer</span>(<span class="at">design =</span> design, <span class="at">n1 =</span> <span class="dv">296</span>, <span class="at">nuisance =</span> <span class="fl">0.225</span>, </span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>                <span class="at">recalculation =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>recalc_alpha_fixed <span class="ot">&lt;-</span> <span class="fu">toer</span>(<span class="at">design =</span> design, <span class="at">n1 =</span> <span class="dv">148</span>,  <span class="at">nuisance =</span> <span class="fl">0.225</span>, </span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>                 <span class="at">recalculation =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a>adj_level_fixed <span class="ot">&lt;-</span> <span class="fu">adjusted_alpha</span>(<span class="at">design =</span> design, <span class="at">n1 =</span> <span class="dv">296</span>, <span class="at">nuisance =</span> <span class="fl">0.225</span>, <span class="at">precision =</span> <span class="fl">0.001</span>, <span class="at">nuis_ass =</span> <span class="fl">0.225</span>, <span class="at">recalculation =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb22-16"><a href="#cb22-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-17"><a href="#cb22-17" aria-hidden="true" tabindex="-1"></a>adj_level_recalc <span class="ot">&lt;-</span> <span class="fu">adjusted_alpha</span>(<span class="at">design =</span> design, <span class="at">n1 =</span> <span class="dv">148</span>, <span class="at">nuisance =</span> <span class="fl">0.225</span>, <span class="at">precision =</span> <span class="fl">0.001</span>, <span class="at">recalculation =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb22-18"><a href="#cb22-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-19"><a href="#cb22-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-20"><a href="#cb22-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Power</span></span>
+<span id="cb22-21"><a href="#cb22-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-22"><a href="#cb22-22" aria-hidden="true" tabindex="-1"></a>power_fixed_r1 <span class="ot">&lt;-</span> <span class="fu">pow</span>(<span class="at">design =</span> design, <span class="at">n1 =</span> <span class="dv">296</span>, <span class="at">nuisance =</span> <span class="fl">0.225</span>, <span class="at">recalculation =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb22-23"><a href="#cb22-23" aria-hidden="true" tabindex="-1"></a>power_recalc_r1 <span class="ot">&lt;-</span> <span class="fu">pow</span>(<span class="at">design =</span> design, <span class="at">n1 =</span> <span class="dv">148</span>, <span class="at">nuisance =</span> <span class="fl">0.225</span>, <span class="at">recalculation =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb22-24"><a href="#cb22-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-25"><a href="#cb22-25" aria-hidden="true" tabindex="-1"></a>examination_15_r3 <span class="ot">&lt;-</span> <span class="fu">round</span>(<span class="fu">c</span>(actual_alpha_fixed, recalc_alpha_fixed, adj_level_fixed, adj_level_recalc, power_fixed_r1, power_recalc_r1), <span class="dv">3</span>)</span>
+<span id="cb22-26"><a href="#cb22-26" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(examination_15_r3) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Actual alpha level fixed"</span>, <span class="st">"Actual alpha level recalculation"</span>, <span class="st">"Adjusted alpha level fixed"</span>, <span class="st">"Adjusted alpha level recalculation"</span>, <span class="st">"Power fixed"</span>, <span class="st">"Power recalculation"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+</section>
+<section id="c-example-3-delta-0.3-and-allocation-ratio-11" class="level3">
+<h3 class="anchored" data-anchor-id="c-example-3-delta-0.3-and-allocation-ratio-11">c, Example 3: Delta = 0.3 and allocation ratio 1:1</h3>
+<section id="step-1-planning-phase-2" class="level4">
+<h4 class="anchored" data-anchor-id="step-1-planning-phase-2">Step 1: Planning phase</h4>
+</section>
+<section id="calculation-of-initial-sample-size-𝒏_𝟎-based-on-trial-specification-and-current-knowledgrecalce-of-nuisance-parameters-𝒏𝒑_𝟎." class="level4">
+<h4 class="anchored" data-anchor-id="calculation-of-initial-sample-size-𝒏_𝟎-based-on-trial-specification-and-current-knowledgrecalce-of-nuisance-parameters-𝒏𝒑_𝟎.">1.1 Calculation of initial sample size 𝒏_𝟎 based on trial specification and current knowledgrecalce of nuisance parameters 𝒏𝒑_𝟎.</h4>
+<ul>
+<li>alpha = 0.025 (one-sided)</li>
+<li>1-beta (Power) = 0.8 delta = 0.15</li>
+<li>Proportion of responders in the placebo group: 0.15</li>
+<li>Allocation ratio: 1:1</li>
+</ul>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>delta <span class="ot">=</span> <span class="fl">0.3</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>p_c <span class="ot">&lt;-</span> <span class="fl">0.15</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>r <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>p_e <span class="ot">&lt;-</span> delta <span class="sc">+</span> p_c</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>p_a <span class="ot">&lt;-</span> (p_c <span class="sc">+</span> r <span class="sc">*</span> p_e)<span class="sc">/</span>(<span class="dv">1</span><span class="sc">+</span>r)</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">paste0</span>(<span class="st">"Overall response rate nuisance parameter: "</span>, p_a))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>[1] “Overall response rate nuisance parameter: 0.3”</p>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>design <span class="ot">&lt;-</span> <span class="fu">setupChiSquare</span>(<span class="at">alpha =</span> <span class="fl">0.025</span>, <span class="at">beta =</span> <span class="fl">0.2</span>, <span class="at">r =</span> <span class="dv">1</span>,  <span class="at">delta =</span> <span class="fl">0.3</span>)</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>n_0_r1_3 <span class="ot">&lt;-</span> <span class="fu">n_fix</span>(<span class="at">design =</span> design, <span class="at">nuisance =</span> p_a, <span class="st">"heterogeneous"</span>, <span class="at">alternative =</span> <span class="st">"greater"</span>)</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">paste0</span>(<span class="st">"initial fixed sample size: "</span>, n_0_r1_3))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>[1] “initial fixed sample size: 72”</p>
+</section>
+<section id="definition-after-which-proportion-𝝅-of-patients-a-sample-size-recalculation-will-be-conducted-𝒏_𝟏-𝝅-𝒏_𝟎-2" class="level4">
+<h4 class="anchored" data-anchor-id="definition-after-which-proportion-𝝅-of-patients-a-sample-size-recalculation-will-be-conducted-𝒏_𝟏-𝝅-𝒏_𝟎-2">1.2 Definition after which proportion 𝝅 of patients a sample size recalculation will be conducted: 𝒏_𝟏= 𝝅∗ 𝒏_𝟎</h4>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>(n_1_r1_3 <span class="ot">&lt;-</span> <span class="fl">0.5</span><span class="sc">*</span>n_0_r1_3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>[1] 36</p>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">paste0</span>(<span class="st">"Recalculatio after: "</span>, n_1_r1_3))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>[1] “Recalculatio after: 36”</p>
+</section>
+<section id="reestimation-of-nuisance-parameter-𝒏𝒑-based-on-𝒏_𝟏-patients.-2" class="level4">
+<h4 class="anchored" data-anchor-id="reestimation-of-nuisance-parameter-𝒏𝒑-based-on-𝒏_𝟏-patients.-2">2.1: Reestimation of nuisance parameter 𝒏𝒑 based on 𝒏_𝟏 patients.</h4>
+<p>Overall response rate (calculated from the data): p=0.467</p>
+</section>
+<section id="reestimation-of-the-sample-size-n_recalc-2" class="level4">
+<h4 class="anchored" data-anchor-id="reestimation-of-the-sample-size-n_recalc-2">2.2 Reestimation of the sample size n_recalc</h4>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>n_recalc_r1_3 <span class="ot">&lt;-</span> <span class="fu">n_fix</span>(<span class="at">design =</span> design, <span class="at">nuisance =</span> <span class="fl">0.467</span>, <span class="st">"heterogeneous"</span>, <span class="at">alternative =</span> <span class="st">"smaller"</span>)</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">paste0</span>(<span class="st">"recalculated sample size: "</span>, n_recalc_r1_3))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>[1] “recalculated sample size: 86”</p>
+</section>
+<section id="adjustment-of-the-sample-size-according-to-a-pre-specified-rule-to-obtain-the-final-total-sample-size-2" class="level4">
+<h4 class="anchored" data-anchor-id="adjustment-of-the-sample-size-according-to-a-pre-specified-rule-to-obtain-the-final-total-sample-size-2">2.3 Adjustment of the sample size according to a pre-specified rule to obtain the final total sample size</h4>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Restricted design</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>restricted_r1_3 <span class="ot">&lt;-</span> <span class="fu">max</span>(n_0_r1_3, n_recalc_r1_3)</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a><span class="co">#Unrestricted design</span></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>unrestricted_r1_3 <span class="ot">&lt;-</span> <span class="fu">max</span>(n_1_r1_3, n_recalc_r1_3)</span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Unrestricted design with upper boundary</span></span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>unrestr_max_bound_r1_3 <span class="ot">&lt;-</span> <span class="fu">min</span>(<span class="fu">max</span>(n_1_r1_3, n_recalc_r1_3), <span class="dv">300</span>)</span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a>result_3 <span class="ot">&lt;-</span> <span class="fu">c</span>(n_0_r1_3, n_1_r1_3, n_recalc_r1_3, restricted_r1_3, unrestricted_r1_3, unrestr_max_bound_r1_3)</span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(result_3) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"initial sample size"</span>, <span class="st">"Recalculation after"</span>, <span class="st">"Recalculated sample size"</span>, <span class="st">"restricted design"</span>, <span class="st">"unrestricted design"</span>, <span class="st">"unrestricted design with upper bound"</span>)</span>
+<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a><span class="fu">as.data.frame</span>(result_3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code>                                 result_3</code></pre>
+<p>initial sample size 72 Recalculation after 36 Recalculated sample size 86 restricted design 86 unrestricted design 86 unrestricted design with upper bound 86</p>
+</section>
+<section id="examination-of-the-actual-alpha-level-and-power-2" class="level4">
+<h4 class="anchored" data-anchor-id="examination-of-the-actual-alpha-level-and-power-2">Examination of the actual alpha level and power</h4>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># actual alpha level</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>design <span class="ot">&lt;-</span> <span class="fu">setupChiSquare</span>(<span class="at">alpha =</span> <span class="fl">0.025</span>, <span class="at">beta =</span> <span class="fl">0.2</span>, <span class="at">r =</span> <span class="dv">1</span>, <span class="at">delta =</span> <span class="fl">0.3</span>,</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>                         <span class="at">alternative =</span> <span class="st">"greater"</span>)</span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>actual_alpha_fixed <span class="ot">&lt;-</span> <span class="fu">toer</span>(<span class="at">design =</span> design, <span class="at">n1 =</span> <span class="dv">72</span>, <span class="at">nuisance =</span> <span class="fl">0.225</span>, </span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>                <span class="at">recalculation =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a>recalc_alpha_fixed <span class="ot">&lt;-</span> <span class="fu">toer</span>(<span class="at">design =</span> design, <span class="at">n1 =</span> <span class="dv">36</span>,  <span class="at">nuisance =</span> <span class="fl">0.225</span>, </span>
+<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a>                 <span class="at">recalculation =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-12"><a href="#cb30-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-13"><a href="#cb30-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-14"><a href="#cb30-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-15"><a href="#cb30-15" aria-hidden="true" tabindex="-1"></a>adj_level_fixed <span class="ot">&lt;-</span> <span class="fu">adjusted_alpha</span>(<span class="at">design =</span> design, <span class="at">n1 =</span> <span class="dv">72</span>, <span class="at">nuisance =</span> <span class="fl">0.225</span>, <span class="at">precision =</span> <span class="fl">0.001</span>, <span class="at">nuis_ass =</span> <span class="fl">0.225</span>, <span class="at">recalculation =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb30-16"><a href="#cb30-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-17"><a href="#cb30-17" aria-hidden="true" tabindex="-1"></a>adj_level_recalc <span class="ot">&lt;-</span> <span class="fu">adjusted_alpha</span>(<span class="at">design =</span> design, <span class="at">n1 =</span> <span class="dv">36</span>, <span class="at">nuisance =</span> <span class="fl">0.225</span>, <span class="at">precision =</span> <span class="fl">0.001</span>, <span class="at">recalculation =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb30-18"><a href="#cb30-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-19"><a href="#cb30-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-20"><a href="#cb30-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Power</span></span>
+<span id="cb30-21"><a href="#cb30-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-22"><a href="#cb30-22" aria-hidden="true" tabindex="-1"></a>power_fixed_r1 <span class="ot">&lt;-</span> <span class="fu">pow</span>(<span class="at">design =</span> design, <span class="at">n1 =</span> <span class="dv">72</span>, <span class="at">nuisance =</span> <span class="fl">0.225</span>, <span class="at">recalculation =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb30-23"><a href="#cb30-23" aria-hidden="true" tabindex="-1"></a>power_recalc_r1 <span class="ot">&lt;-</span> <span class="fu">pow</span>(<span class="at">design =</span> design, <span class="at">n1 =</span> <span class="dv">36</span>, <span class="at">nuisance =</span> <span class="fl">0.225</span>, <span class="at">recalculation =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb30-24"><a href="#cb30-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-25"><a href="#cb30-25" aria-hidden="true" tabindex="-1"></a>examination_30_r1 <span class="ot">&lt;-</span> <span class="fu">round</span>(<span class="fu">c</span>(actual_alpha_fixed, recalc_alpha_fixed, adj_level_fixed, adj_level_recalc, power_fixed_r1, power_recalc_r1), <span class="dv">3</span>)</span>
+<span id="cb30-26"><a href="#cb30-26" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(examination_30_r1) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Actual alpha level fixed"</span>, <span class="st">"Actual alpha level recalculation"</span>, <span class="st">"Adjusted alpha level fixed"</span>, <span class="st">"Adjusted alpha level recalculation"</span>, <span class="st">"Power fixed"</span>, <span class="st">"Power recalculation"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+</section>
+<section id="d.-example-delta-0.3-and-allocation-ratio-31" class="level3">
+<h3 class="anchored" data-anchor-id="d.-example-delta-0.3-and-allocation-ratio-31">d.&nbsp;Example: Delta = 0.3 and allocation ratio 3:1</h3>
+<section id="step-1-planning-phase-3" class="level4">
+<h4 class="anchored" data-anchor-id="step-1-planning-phase-3">Step 1: Planning phase</h4>
+</section>
+<section id="calculation-of-initial-sample-size-𝒏_𝟎-based-on-trial-specification-and-current-knowledgrecalce-of-nuisance-parameters-𝒏𝒑_𝟎.-1" class="level4">
+<h4 class="anchored" data-anchor-id="calculation-of-initial-sample-size-𝒏_𝟎-based-on-trial-specification-and-current-knowledgrecalce-of-nuisance-parameters-𝒏𝒑_𝟎.-1">1.1 Calculation of initial sample size 𝒏_𝟎 based on trial specification and current knowledgrecalce of nuisance parameters 𝒏𝒑_𝟎.</h4>
+<ul>
+<li>alpha = 0.025 (one-sided)</li>
+<li>1-beta (Power) = 0.8</li>
+<li>delta = 0.15</li>
+<li>Proportion of responders of the placebo group: 0.15</li>
+<li>Allocation ratio: 3:1</li>
+</ul>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>delta <span class="ot">=</span> <span class="fl">0.3</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>p_c <span class="ot">&lt;-</span> <span class="fl">0.15</span></span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>r <span class="ot">&lt;-</span> <span class="dv">3</span></span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>p_e <span class="ot">&lt;-</span> delta <span class="sc">+</span> p_c</span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>p_a <span class="ot">&lt;-</span> (p_c <span class="sc">+</span> r <span class="sc">*</span> p_e)<span class="sc">/</span>(<span class="dv">1</span><span class="sc">+</span>r)</span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">paste0</span>(<span class="st">"Overall response rate nuisance parameter: "</span>, p_a))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>[1] “Overall response rate nuisance parameter: 0.375”</p>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>design <span class="ot">&lt;-</span> <span class="fu">setupChiSquare</span>(<span class="at">alpha =</span> <span class="fl">0.025</span>, <span class="at">beta =</span> <span class="fl">0.2</span>, <span class="at">r =</span> <span class="dv">3</span>,  <span class="at">delta =</span> <span class="fl">0.3</span>)</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>n_0_r3_4 <span class="ot">&lt;-</span> <span class="fu">n_fix</span>(<span class="at">design =</span> design, <span class="at">nuisance =</span> p_a, <span class="st">"heterogeneous"</span>, <span class="at">alternative =</span> <span class="st">"greater"</span>)</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">paste0</span>(<span class="st">"initial fixed sample size: "</span>, n_0_r3_4))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>[1] “initial fixed sample size: 100”</p>
+</section>
+<section id="definition-after-which-proportion-𝝅-of-patients-a-sample-size-recalculation-will-be-conducted-𝒏_𝟏-𝝅-𝒏_𝟎-3" class="level4">
+<h4 class="anchored" data-anchor-id="definition-after-which-proportion-𝝅-of-patients-a-sample-size-recalculation-will-be-conducted-𝒏_𝟏-𝝅-𝒏_𝟎-3">1.2 Definition after which proportion 𝝅 of patients a sample size recalculation will be conducted: 𝒏_𝟏= 𝝅∗ 𝒏_𝟎</h4>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(n_1_r3_4 <span class="ot">&lt;-</span> <span class="fl">0.5</span><span class="sc">*</span>n_0_r3_4)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>[1] 50</p>
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">paste0</span>(<span class="st">"Recalculatio after: "</span>, n_1_r3_4))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>[1] “Recalculatio after: 50”</p>
+</section>
+<section id="reestimation-of-nuisance-parameter-𝒏𝒑-based-on-𝒏_𝟏-patients.-3" class="level4">
+<h4 class="anchored" data-anchor-id="reestimation-of-nuisance-parameter-𝒏𝒑-based-on-𝒏_𝟏-patients.-3">2.1: Reestimation of nuisance parameter 𝒏𝒑 based on 𝒏_𝟏 patients.</h4>
+<p>Overall response rate (calculated from the data): 𝑝=0.467</p>
+</section>
+<section id="reestimation-of-the-sample-size-n_recalc-3" class="level4">
+<h4 class="anchored" data-anchor-id="reestimation-of-the-sample-size-n_recalc-3">2.2 Reestimation of the sample size n_recalc</h4>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>n_recalc_r3_4 <span class="ot">&lt;-</span> <span class="fu">n_fix</span>(<span class="at">design =</span> design, <span class="at">nuisance =</span> <span class="fl">0.467</span>, <span class="st">"heterogeneous"</span>, <span class="at">alternative =</span> <span class="st">"smaller"</span>)</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">paste0</span>(<span class="st">"recalculated sample size: "</span>, n_recalc_r3_4))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>[1] “recalculated sample size: 112”</p>
+</section>
+<section id="adjustment-of-the-sample-size-according-to-a-pre-specified-rule-to-optain-the-final-total-sample-size" class="level4">
+<h4 class="anchored" data-anchor-id="adjustment-of-the-sample-size-according-to-a-pre-specified-rule-to-optain-the-final-total-sample-size">2.3 Adjustment of the sample size according to a pre-specified rule to optain the final total sample size</h4>
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Restricted design</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>restricted_r3_4 <span class="ot">&lt;-</span> <span class="fu">max</span>(n_0_r3_4, n_recalc_r3_4)</span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a><span class="co">#Unrestricted design</span></span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>unrestricted_r3_4 <span class="ot">&lt;-</span> <span class="fu">max</span>(n_1_r3, n_recalc_r3_4)</span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Unrestricted design with upper boundary</span></span>
+<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a>unrestr_max_bound_r3_4 <span class="ot">&lt;-</span> <span class="fu">min</span>(<span class="fu">max</span>(n_1_r3_4, n_recalc_r3_4), <span class="dv">350</span>)</span>
+<span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-10"><a href="#cb36-10" aria-hidden="true" tabindex="-1"></a>result_4 <span class="ot">&lt;-</span> <span class="fu">c</span>(n_0_r3_4, n_1_r3_4, n_recalc_r3_4, restricted_r3_4, unrestricted_r3_4, unrestr_max_bound_r3_4)</span>
+<span id="cb36-11"><a href="#cb36-11" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(result_4) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"initial sample size"</span>, <span class="st">"Recalculation after"</span>, <span class="st">"Recalculated sample size"</span>, <span class="st">"restricted design"</span>, <span class="st">"unrestricted design"</span>, <span class="st">"unrestricted design with upper bound"</span>)</span>
+<span id="cb36-12"><a href="#cb36-12" aria-hidden="true" tabindex="-1"></a><span class="fu">as.data.frame</span>(result_4)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code>                                 result_4</code></pre>
+<p>initial sample size 100 Recalculation after 50 Recalculated sample size 112 restricted design 112 unrestricted design 168 unrestricted design with upper bound 112</p>
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>examples<span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Ex 1: Delta = 0.15, r = 1:1"</span>, <span class="st">"Ex 2: Delta = 0.15, r = 3:1"</span>, <span class="st">"Ex 3: Delta = 0.30, r = 1:1"</span>, <span class="st">"Ex 4: Delta = 0.30, r = 3:1"</span>)</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>sample_size <span class="ot">&lt;-</span> <span class="fu">t</span>(<span class="fu">data.frame</span>(<span class="at">delta_0.15_r1 =</span> result_1, <span class="at">delta_0.15_r3 =</span> result_2, </span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>                          <span class="at">delta_0.3_r1 =</span> result_3, <span class="at">delta_0.3_r3 =</span> result_4))</span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a>sample_size <span class="ot">&lt;-</span> <span class="fu">cbind</span>(examples, <span class="fu">as.data.frame</span>(sample_size))</span>
+<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a>sasi <span class="ot">&lt;-</span> <span class="fu">flextable</span>(sample_size)</span>
+<span id="cb38-8"><a href="#cb38-8" aria-hidden="true" tabindex="-1"></a>sasi <span class="ot">&lt;-</span> sasi <span class="sc">%&gt;%</span></span>
+<span id="cb38-9"><a href="#cb38-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">width</span>(<span class="at">j =</span> <span class="dv">1</span>, <span class="at">width =</span> <span class="dv">3</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb38-10"><a href="#cb38-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bold</span>(<span class="at">j =</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb38-11"><a href="#cb38-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bold</span>(<span class="at">bold =</span> <span class="cn">TRUE</span>, <span class="at">part =</span> <span class="st">"header"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+</section>
+<section id="initial-and-recalculated-sample-sizes-for-different-designs" class="level3">
+<h3 class="anchored" data-anchor-id="initial-and-recalculated-sample-sizes-for-different-designs">Initial and recalculated sample sizes for different designs</h3>
+<div class="cell-output-display">
+
+<div class="tabwid"><style>.cl-0db9c040{}.cl-0da4b678{font-family:'Arial';font-size:11pt;font-weight:bold;font-style:normal;text-decoration:none;color:rgba(0, 0, 0, 1.00);background-color:transparent;}.cl-0da4b6aa{font-family:'Arial';font-size:11pt;font-weight:normal;font-style:normal;text-decoration:none;color:rgba(0, 0, 0, 1.00);background-color:transparent;}.cl-0dacd484{margin:0;text-align:left;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-0dacd48e{margin:0;text-align:right;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-0dacf96e{width:3in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-0dacf978{width:0.75in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-0dacf979{width:3in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-0dacf982{width:0.75in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-0dacf983{width:3in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-0dacf984{width:0.75in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}</style><table data-quarto-disable-processing="true" class="cl-0db9c040"><thead><tr style="overflow-wrap:break-word;"><th class="cl-0dacf96e"><p class="cl-0dacd484"><span class="cl-0da4b678">examples</span></p></th><th class="cl-0dacf978"><p class="cl-0dacd48e"><span class="cl-0da4b678">initial sample size</span></p></th><th class="cl-0dacf978"><p class="cl-0dacd48e"><span class="cl-0da4b678">Recalculation after</span></p></th><th class="cl-0dacf978"><p class="cl-0dacd48e"><span class="cl-0da4b678">Recalculated sample size</span></p></th><th class="cl-0dacf978"><p class="cl-0dacd48e"><span class="cl-0da4b678">restricted design</span></p></th><th class="cl-0dacf978"><p class="cl-0dacd48e"><span class="cl-0da4b678">unrestricted design</span></p></th><th class="cl-0dacf978"><p class="cl-0dacd48e"><span class="cl-0da4b678">unrestricted design with upper bound</span></p></th></tr></thead><tbody><tr style="overflow-wrap:break-word;"><td class="cl-0dacf979"><p class="cl-0dacd484"><span class="cl-0da4b678">Ex 1: Delta = 0.15, r = 1:1</span></p></td><td class="cl-0dacf982"><p class="cl-0dacd48e"><span class="cl-0da4b6aa">242</span></p></td><td class="cl-0dacf982"><p class="cl-0dacd48e"><span class="cl-0da4b6aa">121</span></p></td><td class="cl-0dacf982"><p class="cl-0dacd48e"><span class="cl-0da4b6aa">346</span></p></td><td class="cl-0dacf982"><p class="cl-0dacd48e"><span class="cl-0da4b6aa">346</span></p></td><td class="cl-0dacf982"><p class="cl-0dacd48e"><span class="cl-0da4b6aa">346</span></p></td><td class="cl-0dacf982"><p class="cl-0dacd48e"><span class="cl-0da4b6aa">300</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-0dacf979"><p class="cl-0dacd484"><span class="cl-0da4b678">Ex 2: Delta = 0.15, r = 3:1</span></p></td><td class="cl-0dacf982"><p class="cl-0dacd48e"><span class="cl-0da4b6aa">336</span></p></td><td class="cl-0dacf982"><p class="cl-0dacd48e"><span class="cl-0da4b6aa">168</span></p></td><td class="cl-0dacf982"><p class="cl-0dacd48e"><span class="cl-0da4b6aa">456</span></p></td><td class="cl-0dacf982"><p class="cl-0dacd48e"><span class="cl-0da4b6aa">456</span></p></td><td class="cl-0dacf982"><p class="cl-0dacd48e"><span class="cl-0da4b6aa">456</span></p></td><td class="cl-0dacf982"><p class="cl-0dacd48e"><span class="cl-0da4b6aa">350</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-0dacf979"><p class="cl-0dacd484"><span class="cl-0da4b678">Ex 3: Delta = 0.30, r = 1:1</span></p></td><td class="cl-0dacf982"><p class="cl-0dacd48e"><span class="cl-0da4b6aa">72</span></p></td><td class="cl-0dacf982"><p class="cl-0dacd48e"><span class="cl-0da4b6aa">36</span></p></td><td class="cl-0dacf982"><p class="cl-0dacd48e"><span class="cl-0da4b6aa">86</span></p></td><td class="cl-0dacf982"><p class="cl-0dacd48e"><span class="cl-0da4b6aa">86</span></p></td><td class="cl-0dacf982"><p class="cl-0dacd48e"><span class="cl-0da4b6aa">86</span></p></td><td class="cl-0dacf982"><p class="cl-0dacd48e"><span class="cl-0da4b6aa">86</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-0dacf983"><p class="cl-0dacd484"><span class="cl-0da4b678">Ex 4: Delta = 0.30, r = 3:1</span></p></td><td class="cl-0dacf984"><p class="cl-0dacd48e"><span class="cl-0da4b6aa">100</span></p></td><td class="cl-0dacf984"><p class="cl-0dacd48e"><span class="cl-0da4b6aa">50</span></p></td><td class="cl-0dacf984"><p class="cl-0dacd48e"><span class="cl-0da4b6aa">112</span></p></td><td class="cl-0dacf984"><p class="cl-0dacd48e"><span class="cl-0da4b6aa">112</span></p></td><td class="cl-0dacf984"><p class="cl-0dacd48e"><span class="cl-0da4b6aa">168</span></p></td><td class="cl-0dacf984"><p class="cl-0dacd48e"><span class="cl-0da4b6aa">112</span></p></td></tr></tbody></table></div>
+</div>
+<section id="examination-of-the-actual-alpha-level-and-power-3" class="level4">
+<h4 class="anchored" data-anchor-id="examination-of-the-actual-alpha-level-and-power-3">Examination of the actual alpha level and power</h4>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="co"># actual alpha level</span></span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>design <span class="ot">&lt;-</span> <span class="fu">setupChiSquare</span>(<span class="at">alpha =</span> <span class="fl">0.025</span>, <span class="at">beta =</span> <span class="fl">0.2</span>, <span class="at">r =</span> <span class="dv">3</span>, <span class="at">delta =</span> <span class="fl">0.3</span>,</span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>                         <span class="at">alternative =</span> <span class="st">"greater"</span>)</span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>actual_alpha_fixed <span class="ot">&lt;-</span> <span class="fu">toer</span>(<span class="at">design =</span> design, <span class="at">n1 =</span> <span class="dv">84</span>, <span class="at">nuisance =</span> <span class="fl">0.225</span>, </span>
+<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a>                <span class="at">recalculation =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-9"><a href="#cb39-9" aria-hidden="true" tabindex="-1"></a>recalc_alpha_fixed <span class="ot">&lt;-</span> <span class="fu">toer</span>(<span class="at">design =</span> design, <span class="at">n1 =</span> <span class="dv">44</span>,  <span class="at">nuisance =</span> <span class="fl">0.225</span>, </span>
+<span id="cb39-10"><a href="#cb39-10" aria-hidden="true" tabindex="-1"></a>                 <span class="at">recalculation =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb39-11"><a href="#cb39-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-12"><a href="#cb39-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-13"><a href="#cb39-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-14"><a href="#cb39-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-15"><a href="#cb39-15" aria-hidden="true" tabindex="-1"></a>adj_level_fixed <span class="ot">&lt;-</span> <span class="fu">adjusted_alpha</span>(<span class="at">design =</span> design, <span class="at">n1 =</span> <span class="dv">84</span>, <span class="at">nuisance =</span> <span class="fl">0.225</span>, <span class="at">precision =</span> <span class="fl">0.001</span>, <span class="at">nuis_ass =</span> <span class="fl">0.225</span>, <span class="at">recalculation =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb39-16"><a href="#cb39-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-17"><a href="#cb39-17" aria-hidden="true" tabindex="-1"></a>adj_level_recalc <span class="ot">&lt;-</span> <span class="fu">adjusted_alpha</span>(<span class="at">design =</span> design, <span class="at">n1 =</span> <span class="dv">44</span>, <span class="at">nuisance =</span> <span class="fl">0.225</span>, <span class="at">precision =</span> <span class="fl">0.001</span>, <span class="at">recalculation =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb39-18"><a href="#cb39-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-19"><a href="#cb39-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-20"><a href="#cb39-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Power</span></span>
+<span id="cb39-21"><a href="#cb39-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-22"><a href="#cb39-22" aria-hidden="true" tabindex="-1"></a>power_fixed_r1 <span class="ot">&lt;-</span> <span class="fu">pow</span>(<span class="at">design =</span> design, <span class="at">n1 =</span> <span class="dv">84</span>, <span class="at">nuisance =</span> <span class="fl">0.225</span>, <span class="at">recalculation =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb39-23"><a href="#cb39-23" aria-hidden="true" tabindex="-1"></a>power_recalc_r1 <span class="ot">&lt;-</span> <span class="fu">pow</span>(<span class="at">design =</span> design, <span class="at">n1 =</span> <span class="dv">44</span>, <span class="at">nuisance =</span> <span class="fl">0.225</span>, <span class="at">recalculation =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb39-24"><a href="#cb39-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-25"><a href="#cb39-25" aria-hidden="true" tabindex="-1"></a>examination_30_r3 <span class="ot">&lt;-</span> <span class="fu">round</span>(<span class="fu">c</span>(actual_alpha_fixed, recalc_alpha_fixed, adj_level_fixed, adj_level_recalc, power_fixed_r1, power_recalc_r1), <span class="dv">3</span>)</span>
+<span id="cb39-26"><a href="#cb39-26" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(examination_30_r3) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Actual alpha level fixed"</span>, <span class="st">"Actual alpha level recalculation"</span>, <span class="st">"Adjusted alpha level fixed"</span>, <span class="st">"Adjusted alpha level recalculation"</span>, <span class="st">"Power fixed"</span>, <span class="st">"Power recalculation"</span>)</span>
+<span id="cb39-27"><a href="#cb39-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-28"><a href="#cb39-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-29"><a href="#cb39-29" aria-hidden="true" tabindex="-1"></a>examination <span class="ot">&lt;-</span> <span class="fu">t</span>(<span class="fu">data.frame</span>(<span class="at">delta_0.15_r1 =</span> examination_15_r1, <span class="at">delta_0.15_r3 =</span> examination_15_r3, </span>
+<span id="cb39-30"><a href="#cb39-30" aria-hidden="true" tabindex="-1"></a>                          <span class="at">delta_0.3_r1 =</span> examination_30_r1, <span class="at">delta_0.3_r3 =</span> examination_30_r3))</span>
+<span id="cb39-31"><a href="#cb39-31" aria-hidden="true" tabindex="-1"></a>examination <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(examination)</span>
+<span id="cb39-32"><a href="#cb39-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-33"><a href="#cb39-33" aria-hidden="true" tabindex="-1"></a>examination <span class="ot">&lt;-</span> <span class="fu">cbind</span>(examples, examination)</span>
+<span id="cb39-34"><a href="#cb39-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-35"><a href="#cb39-35" aria-hidden="true" tabindex="-1"></a>examination <span class="ot">&lt;-</span> <span class="fu">flextable</span>(examination)</span>
+<span id="cb39-36"><a href="#cb39-36" aria-hidden="true" tabindex="-1"></a>examination <span class="ot">&lt;-</span> examination <span class="sc">%&gt;%</span></span>
+<span id="cb39-37"><a href="#cb39-37" aria-hidden="true" tabindex="-1"></a>  <span class="fu">width</span>(<span class="at">j =</span> <span class="dv">1</span>, <span class="at">width =</span> <span class="dv">3</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb39-38"><a href="#cb39-38" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bold</span>(<span class="at">j =</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb39-39"><a href="#cb39-39" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bold</span>(<span class="at">bold =</span> <span class="cn">TRUE</span>, <span class="at">part =</span> <span class="st">"header"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+</section>
+<section id="actual-alpha-level-adjusted-alpha-level-and-achieved-power-of-different-designs" class="level3">
+<h3 class="anchored" data-anchor-id="actual-alpha-level-adjusted-alpha-level-and-achieved-power-of-different-designs">Actual alpha level, adjusted alpha level and achieved power of different designs</h3>
+<div class="cell-output-display">
+
+<div class="tabwid"><style>.cl-0e402d38{}.cl-0e2f9266{font-family:'Arial';font-size:11pt;font-weight:bold;font-style:normal;text-decoration:none;color:rgba(0, 0, 0, 1.00);background-color:transparent;}.cl-0e2f927a{font-family:'Arial';font-size:11pt;font-weight:normal;font-style:normal;text-decoration:none;color:rgba(0, 0, 0, 1.00);background-color:transparent;}.cl-0e347236{margin:0;text-align:left;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-0e347254{margin:0;text-align:right;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-0e34af44{width:3in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-0e34af58{width:0.75in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-0e34af62{width:3in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-0e34af63{width:0.75in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-0e34af76{width:3in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-0e34af77{width:0.75in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}</style><table data-quarto-disable-processing="true" class="cl-0e402d38"><thead><tr style="overflow-wrap:break-word;"><th class="cl-0e34af44"><p class="cl-0e347236"><span class="cl-0e2f9266">examples</span></p></th><th class="cl-0e34af58"><p class="cl-0e347254"><span class="cl-0e2f9266">Actual alpha level fixed</span></p></th><th class="cl-0e34af58"><p class="cl-0e347254"><span class="cl-0e2f9266">Actual alpha level recalculation</span></p></th><th class="cl-0e34af58"><p class="cl-0e347254"><span class="cl-0e2f9266">Adjusted alpha level fixed</span></p></th><th class="cl-0e34af58"><p class="cl-0e347254"><span class="cl-0e2f9266">Adjusted alpha level recalculation</span></p></th><th class="cl-0e34af58"><p class="cl-0e347254"><span class="cl-0e2f9266">Power fixed</span></p></th><th class="cl-0e34af58"><p class="cl-0e347254"><span class="cl-0e2f9266">Power recalculation</span></p></th></tr></thead><tbody><tr style="overflow-wrap:break-word;"><td class="cl-0e34af62"><p class="cl-0e347236"><span class="cl-0e2f9266">Ex 1: Delta = 0.15, r = 1:1</span></p></td><td class="cl-0e34af63"><p class="cl-0e347254"><span class="cl-0e2f927a">0.025</span></p></td><td class="cl-0e34af63"><p class="cl-0e347254"><span class="cl-0e2f927a">0.025</span></p></td><td class="cl-0e34af63"><p class="cl-0e347254"><span class="cl-0e2f927a">0.024</span></p></td><td class="cl-0e34af63"><p class="cl-0e347254"><span class="cl-0e2f927a">0.025</span></p></td><td class="cl-0e34af63"><p class="cl-0e347254"><span class="cl-0e2f927a">0.809</span></p></td><td class="cl-0e34af63"><p class="cl-0e347254"><span class="cl-0e2f927a">0.794</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-0e34af62"><p class="cl-0e347236"><span class="cl-0e2f9266">Ex 2: Delta = 0.15, r = 3:1</span></p></td><td class="cl-0e34af63"><p class="cl-0e347254"><span class="cl-0e2f927a">0.022</span></p></td><td class="cl-0e34af63"><p class="cl-0e347254"><span class="cl-0e2f927a">0.022</span></p></td><td class="cl-0e34af63"><p class="cl-0e347254"><span class="cl-0e2f927a">0.025</span></p></td><td class="cl-0e34af63"><p class="cl-0e347254"><span class="cl-0e2f927a">0.025</span></p></td><td class="cl-0e34af63"><p class="cl-0e347254"><span class="cl-0e2f927a">0.808</span></p></td><td class="cl-0e34af63"><p class="cl-0e347254"><span class="cl-0e2f927a">0.793</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-0e34af62"><p class="cl-0e347236"><span class="cl-0e2f9266">Ex 3: Delta = 0.30, r = 1:1</span></p></td><td class="cl-0e34af63"><p class="cl-0e347254"><span class="cl-0e2f927a">0.024</span></p></td><td class="cl-0e34af63"><p class="cl-0e347254"><span class="cl-0e2f927a">0.026</span></p></td><td class="cl-0e34af63"><p class="cl-0e347254"><span class="cl-0e2f927a">0.025</span></p></td><td class="cl-0e34af63"><p class="cl-0e347254"><span class="cl-0e2f927a">0.024</span></p></td><td class="cl-0e34af63"><p class="cl-0e347254"><span class="cl-0e2f927a">0.896</span></p></td><td class="cl-0e34af63"><p class="cl-0e347254"><span class="cl-0e2f927a">0.792</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-0e34af76"><p class="cl-0e347236"><span class="cl-0e2f9266">Ex 4: Delta = 0.30, r = 3:1</span></p></td><td class="cl-0e34af77"><p class="cl-0e347254"><span class="cl-0e2f927a">0.019</span></p></td><td class="cl-0e34af77"><p class="cl-0e347254"><span class="cl-0e2f927a">0.011</span></p></td><td class="cl-0e34af77"><p class="cl-0e347254"><span class="cl-0e2f927a">0.025</span></p></td><td class="cl-0e34af77"><p class="cl-0e347254"><span class="cl-0e2f927a">0.025</span></p></td><td class="cl-0e34af77"><p class="cl-0e347254"><span class="cl-0e2f927a">0.992</span></p></td><td class="cl-0e34af77"><p class="cl-0e347254"><span class="cl-0e2f927a">0.550</span></p></td></tr></tbody></table></div>
+</div>
+<section id="adjusted-nominal-level-for-different-designs" class="level4">
+<h4 class="anchored" data-anchor-id="adjusted-nominal-level-for-different-designs">Adjusted nominal level for different designs</h4>
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">desing =</span> <span class="fu">c</span>(<span class="st">"delta = 0.15, ratio = 1:1"</span>, <span class="cn">NA</span> ,<span class="st">"delta = 0.15, ratio = 3:1"</span>,<span class="cn">NA</span> ,<span class="st">"delta = 0.30, ratio = 1:1"</span>,<span class="cn">NA</span> ,<span class="st">"delta = 0.30, ratio = 3:1"</span>, <span class="cn">NA</span>), <span class="at">ss_calc =</span> <span class="fu">c</span>(<span class="st">"fixed sample size"</span>, <span class="st">"recalculated sample size"</span>, <span class="st">"fixed sample size"</span>, <span class="st">"recalculated sample size"</span>, <span class="st">"fixed sample size"</span>, <span class="st">"recalculated sample size"</span>, <span class="st">"fixed sample size"</span>, <span class="st">"recalculated sample size"</span>),</span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>                   <span class="st">`</span><span class="at">adj_level</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="fl">0.24</span>, <span class="fl">0.23</span>, <span class="fl">0.21</span>, <span class="fl">0.21</span>, <span class="fl">0.23</span>, <span class="fl">0.23</span>, <span class="fl">0.17</span>, <span class="fl">0.12</span>))</span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a> <span class="fu">flextable</span>(data) <span class="sc">%&gt;%</span></span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bold</span>(<span class="at">bold =</span> <span class="cn">TRUE</span>, <span class="at">part =</span> <span class="st">"header"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">width</span>(<span class="at">j =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>), <span class="at">width =</span> <span class="dv">2</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a>   <span class="fu">width</span>(<span class="at">j =</span> <span class="dv">3</span>, <span class="at">width =</span> <span class="fl">1.5</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a>   <span class="fu">set_header_labels</span>(</span>
+<span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a>     <span class="at">values =</span> <span class="fu">list</span>(</span>
+<span id="cb40-10"><a href="#cb40-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">design =</span> <span class="st">"Trial design"</span>,</span>
+<span id="cb40-11"><a href="#cb40-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">ss_calc =</span> <span class="st">"sample size calculation"</span>, </span>
+<span id="cb40-12"><a href="#cb40-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">adj_level =</span> <span class="st">"Adjusted nominal</span><span class="sc">\n</span><span class="st">alpha level"</span></span>
+<span id="cb40-13"><a href="#cb40-13" aria-hidden="true" tabindex="-1"></a>  ))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+
+<div class="tabwid"><style>.cl-0e63e962{}.cl-0e54fa74{font-family:'Arial';font-size:11pt;font-weight:bold;font-style:normal;text-decoration:none;color:rgba(0, 0, 0, 1.00);background-color:transparent;}.cl-0e54fa88{font-family:'Arial';font-size:11pt;font-weight:normal;font-style:normal;text-decoration:none;color:rgba(0, 0, 0, 1.00);background-color:transparent;}.cl-0e597900{margin:0;text-align:left;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-0e597914{margin:0;text-align:right;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-0e59ad26{width:2in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-0e59ad3a{width:1.5in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-0e59ad44{width:2in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-0e59ad4e{width:1.5in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-0e59ad4f{width:2in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-0e59ad58{width:1.5in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}</style><table data-quarto-disable-processing="true" class="cl-0e63e962"><thead><tr style="overflow-wrap:break-word;"><th class="cl-0e59ad26"><p class="cl-0e597900"><span class="cl-0e54fa74">desing</span></p></th><th class="cl-0e59ad26"><p class="cl-0e597900"><span class="cl-0e54fa74">sample size calculation</span></p></th><th class="cl-0e59ad3a"><p class="cl-0e597914"><span class="cl-0e54fa74">Adjusted nominal</span><br><span class="cl-0e54fa74">alpha level</span></p></th></tr></thead><tbody><tr style="overflow-wrap:break-word;"><td class="cl-0e59ad44"><p class="cl-0e597900"><span class="cl-0e54fa88">delta = 0.15, ratio = 1:1</span></p></td><td class="cl-0e59ad44"><p class="cl-0e597900"><span class="cl-0e54fa88">fixed sample size</span></p></td><td class="cl-0e59ad4e"><p class="cl-0e597914"><span class="cl-0e54fa88">0.24</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-0e59ad44"><p class="cl-0e597900"><span class="cl-0e54fa88"></span></p></td><td class="cl-0e59ad44"><p class="cl-0e597900"><span class="cl-0e54fa88">recalculated sample size</span></p></td><td class="cl-0e59ad4e"><p class="cl-0e597914"><span class="cl-0e54fa88">0.23</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-0e59ad44"><p class="cl-0e597900"><span class="cl-0e54fa88">delta = 0.15, ratio = 3:1</span></p></td><td class="cl-0e59ad44"><p class="cl-0e597900"><span class="cl-0e54fa88">fixed sample size</span></p></td><td class="cl-0e59ad4e"><p class="cl-0e597914"><span class="cl-0e54fa88">0.21</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-0e59ad44"><p class="cl-0e597900"><span class="cl-0e54fa88"></span></p></td><td class="cl-0e59ad44"><p class="cl-0e597900"><span class="cl-0e54fa88">recalculated sample size</span></p></td><td class="cl-0e59ad4e"><p class="cl-0e597914"><span class="cl-0e54fa88">0.21</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-0e59ad44"><p class="cl-0e597900"><span class="cl-0e54fa88">delta = 0.30, ratio = 1:1</span></p></td><td class="cl-0e59ad44"><p class="cl-0e597900"><span class="cl-0e54fa88">fixed sample size</span></p></td><td class="cl-0e59ad4e"><p class="cl-0e597914"><span class="cl-0e54fa88">0.23</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-0e59ad44"><p class="cl-0e597900"><span class="cl-0e54fa88"></span></p></td><td class="cl-0e59ad44"><p class="cl-0e597900"><span class="cl-0e54fa88">recalculated sample size</span></p></td><td class="cl-0e59ad4e"><p class="cl-0e597914"><span class="cl-0e54fa88">0.23</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-0e59ad44"><p class="cl-0e597900"><span class="cl-0e54fa88">delta = 0.30, ratio = 3:1</span></p></td><td class="cl-0e59ad44"><p class="cl-0e597900"><span class="cl-0e54fa88">fixed sample size</span></p></td><td class="cl-0e59ad4e"><p class="cl-0e597914"><span class="cl-0e54fa88">0.17</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-0e59ad4f"><p class="cl-0e597900"><span class="cl-0e54fa88"></span></p></td><td class="cl-0e59ad4f"><p class="cl-0e597900"><span class="cl-0e54fa88">recalculated sample size</span></p></td><td class="cl-0e59ad58"><p class="cl-0e597914"><span class="cl-0e54fa88">0.12</span></p></td></tr></tbody></table></div>
+</div>
+</section>
+<section id="comparison-of-actual-alpha-levels-adjusted-alpha-levels-and-power-for-different-designs-and-nuisance-parameters" class="level4">
+<h4 class="anchored" data-anchor-id="comparison-of-actual-alpha-levels-adjusted-alpha-levels-and-power-for-different-designs-and-nuisance-parameters">2. Comparison of actual alpha levels, adjusted alpha levels, and power for different designs and nuisance parameters</h4>
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="at">file =</span> <span class="fu">paste0</span>(main_path, <span class="st">"/data.rds"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="a-comparison-of-the-actual-alpha-level-for-fixed-vs.-recalculated-sample-size-for-different-nuisance-parameters" class="level4">
+<h4 class="anchored" data-anchor-id="a-comparison-of-the-actual-alpha-level-for-fixed-vs.-recalculated-sample-size-for-different-nuisance-parameters">a, Comparison of the actual alpha level for fixed vs.&nbsp;recalculated sample size for different nuisance parameters</h4>
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>plot1 <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span></span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>( <span class="fu">aes</span>(<span class="at">x=</span>nuisance, <span class="at">y=</span>actual_alpha_d15_r1, <span class="at">group=</span>fixed_recalc, <span class="at">color=</span>fixed_recalc)) <span class="sc">+</span></span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(</span>
+<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Sample size calculation"</span>,</span>
+<span id="cb42-6"><a href="#cb42-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">values =</span> <span class="fu">c</span>(<span class="st">"darkgreen"</span>, <span class="st">"deepskyblue3"</span>)) <span class="sc">+</span></span>
+<span id="cb42-7"><a href="#cb42-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position=</span><span class="st">"bottom"</span>, </span>
+<span id="cb42-8"><a href="#cb42-8" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>)) <span class="sc">+</span></span>
+<span id="cb42-9"><a href="#cb42-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept=</span> <span class="fu">c</span>(<span class="fl">0.025</span>, <span class="fl">0.025</span> <span class="sc">-</span> (<span class="fl">0.025</span><span class="sc">*</span><span class="fl">0.1</span>), <span class="fl">0.025</span> <span class="sc">+</span> (<span class="fl">0.025</span><span class="sc">*</span><span class="fl">0.1</span>)), </span>
+<span id="cb42-10"><a href="#cb42-10" aria-hidden="true" tabindex="-1"></a>             <span class="at">linetype=</span><span class="fu">c</span>(<span class="st">"dashed"</span>, <span class="st">"dashed"</span>, <span class="st">"dashed"</span>), <span class="at">color =</span> <span class="fu">c</span>(<span class="st">"red"</span>, <span class="st">"black"</span>, <span class="st">"black"</span>)) <span class="sc">+</span></span>
+<span id="cb42-11"><a href="#cb42-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Overall rate p"</span>,</span>
+<span id="cb42-12"><a href="#cb42-12" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"actual alpha level"</span>) <span class="sc">+</span></span>
+<span id="cb42-13"><a href="#cb42-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_cartesian</span>(<span class="at">ylim =</span> <span class="fu">c</span>(<span class="fl">0.015</span>, <span class="fl">0.032</span>)) <span class="sc">+</span></span>
+<span id="cb42-14"><a href="#cb42-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="fu">seq</span>(<span class="fl">0.1</span>, <span class="fl">0.9</span>, <span class="at">by =</span> <span class="fl">0.1</span>)) <span class="sc">+</span></span>
+<span id="cb42-15"><a href="#cb42-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Delta of 0.15 and an allocation ratio of 1:1"</span>)</span>
+<span id="cb42-16"><a href="#cb42-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-17"><a href="#cb42-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-18"><a href="#cb42-18" aria-hidden="true" tabindex="-1"></a>plot2 <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span></span>
+<span id="cb42-19"><a href="#cb42-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>( <span class="fu">aes</span>(<span class="at">x=</span>nuisance, <span class="at">y=</span>actual_alpha_d15_r3, <span class="at">group=</span>fixed_recalc, <span class="at">color=</span>fixed_recalc)) <span class="sc">+</span></span>
+<span id="cb42-20"><a href="#cb42-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb42-21"><a href="#cb42-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(</span>
+<span id="cb42-22"><a href="#cb42-22" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Sample size calculation"</span>,</span>
+<span id="cb42-23"><a href="#cb42-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">values =</span> <span class="fu">c</span>(<span class="st">"darkgreen"</span>, <span class="st">"deepskyblue3"</span>)) <span class="sc">+</span></span>
+<span id="cb42-24"><a href="#cb42-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position=</span><span class="st">"bottom"</span>, </span>
+<span id="cb42-25"><a href="#cb42-25" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>)) <span class="sc">+</span></span>
+<span id="cb42-26"><a href="#cb42-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept=</span> <span class="fu">c</span>(<span class="fl">0.025</span>, <span class="fl">0.025</span> <span class="sc">-</span> (<span class="fl">0.025</span><span class="sc">*</span><span class="fl">0.1</span>), <span class="fl">0.025</span> <span class="sc">+</span> (<span class="fl">0.025</span><span class="sc">*</span><span class="fl">0.1</span>)), </span>
+<span id="cb42-27"><a href="#cb42-27" aria-hidden="true" tabindex="-1"></a>             <span class="at">linetype=</span><span class="fu">c</span>(<span class="st">"dashed"</span>, <span class="st">"dashed"</span>, <span class="st">"dashed"</span>), <span class="at">color =</span> <span class="fu">c</span>(<span class="st">"red"</span>, <span class="st">"black"</span>, <span class="st">"black"</span>)) <span class="sc">+</span></span>
+<span id="cb42-28"><a href="#cb42-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Overall rate p"</span>,</span>
+<span id="cb42-29"><a href="#cb42-29" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"actual alpha level"</span>) <span class="sc">+</span></span>
+<span id="cb42-30"><a href="#cb42-30" aria-hidden="true" tabindex="-1"></a>    <span class="fu">coord_cartesian</span>(<span class="at">ylim =</span> <span class="fu">c</span>(<span class="fl">0.015</span>, <span class="fl">0.032</span>)) <span class="sc">+</span></span>
+<span id="cb42-31"><a href="#cb42-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="fu">seq</span>(<span class="fl">0.1</span>, <span class="fl">0.9</span>, <span class="at">by =</span> <span class="fl">0.1</span>)) <span class="sc">+</span></span>
+<span id="cb42-32"><a href="#cb42-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Delta of 0.15 and an allocation ratio of 3:1"</span>)</span>
+<span id="cb42-33"><a href="#cb42-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-34"><a href="#cb42-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-35"><a href="#cb42-35" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(patchwork)</span>
+<span id="cb42-36"><a href="#cb42-36" aria-hidden="true" tabindex="-1"></a>plot_15 <span class="ot">&lt;-</span> plot1<span class="sc">+</span>plot2</span>
+<span id="cb42-37"><a href="#cb42-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-38"><a href="#cb42-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-39"><a href="#cb42-39" aria-hidden="true" tabindex="-1"></a>plot3 <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span></span>
+<span id="cb42-40"><a href="#cb42-40" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>( <span class="fu">aes</span>(<span class="at">x=</span>nuisance, <span class="at">y=</span>actual_alpha_d30_r1, <span class="at">group=</span>fixed_recalc, <span class="at">color=</span>fixed_recalc)) <span class="sc">+</span></span>
+<span id="cb42-41"><a href="#cb42-41" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb42-42"><a href="#cb42-42" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(</span>
+<span id="cb42-43"><a href="#cb42-43" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Sample size calculation"</span>,</span>
+<span id="cb42-44"><a href="#cb42-44" aria-hidden="true" tabindex="-1"></a>    <span class="at">values =</span> <span class="fu">c</span>(<span class="st">"darkgreen"</span>, <span class="st">"deepskyblue3"</span>)) <span class="sc">+</span></span>
+<span id="cb42-45"><a href="#cb42-45" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position=</span><span class="st">"bottom"</span>, </span>
+<span id="cb42-46"><a href="#cb42-46" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>)) <span class="sc">+</span></span>
+<span id="cb42-47"><a href="#cb42-47" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept=</span> <span class="fu">c</span>(<span class="fl">0.025</span>, <span class="fl">0.025</span> <span class="sc">-</span> (<span class="fl">0.025</span><span class="sc">*</span><span class="fl">0.1</span>), <span class="fl">0.025</span> <span class="sc">+</span> (<span class="fl">0.025</span><span class="sc">*</span><span class="fl">0.1</span>)), </span>
+<span id="cb42-48"><a href="#cb42-48" aria-hidden="true" tabindex="-1"></a>             <span class="at">linetype=</span><span class="fu">c</span>(<span class="st">"dashed"</span>, <span class="st">"dashed"</span>, <span class="st">"dashed"</span>), <span class="at">color =</span> <span class="fu">c</span>(<span class="st">"red"</span>, <span class="st">"black"</span>, <span class="st">"black"</span>)) <span class="sc">+</span></span>
+<span id="cb42-49"><a href="#cb42-49" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Overall rate p"</span>,</span>
+<span id="cb42-50"><a href="#cb42-50" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"actual alpha level"</span>) <span class="sc">+</span></span>
+<span id="cb42-51"><a href="#cb42-51" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_cartesian</span>(<span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fl">0.032</span>)) <span class="sc">+</span></span>
+<span id="cb42-52"><a href="#cb42-52" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="fu">seq</span>(<span class="fl">0.1</span>, <span class="fl">0.9</span>, <span class="at">by =</span> <span class="fl">0.1</span>)) <span class="sc">+</span></span>
+<span id="cb42-53"><a href="#cb42-53" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Delta of 0.30 and an allocation ratio of 1:1"</span>)</span>
+<span id="cb42-54"><a href="#cb42-54" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-55"><a href="#cb42-55" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-56"><a href="#cb42-56" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-57"><a href="#cb42-57" aria-hidden="true" tabindex="-1"></a>plot4 <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span></span>
+<span id="cb42-58"><a href="#cb42-58" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>( <span class="fu">aes</span>(<span class="at">x=</span>nuisance, <span class="at">y=</span>actual_alpha_d30_r3, <span class="at">group=</span>fixed_recalc, <span class="at">color=</span>fixed_recalc)) <span class="sc">+</span></span>
+<span id="cb42-59"><a href="#cb42-59" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb42-60"><a href="#cb42-60" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(</span>
+<span id="cb42-61"><a href="#cb42-61" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Sample size calculation"</span>,</span>
+<span id="cb42-62"><a href="#cb42-62" aria-hidden="true" tabindex="-1"></a>    <span class="at">values =</span> <span class="fu">c</span>(<span class="st">"darkgreen"</span>, <span class="st">"deepskyblue3"</span>)) <span class="sc">+</span></span>
+<span id="cb42-63"><a href="#cb42-63" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position=</span><span class="st">"bottom"</span>, </span>
+<span id="cb42-64"><a href="#cb42-64" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>)) <span class="sc">+</span></span>
+<span id="cb42-65"><a href="#cb42-65" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept=</span> <span class="fu">c</span>(<span class="fl">0.025</span>, <span class="fl">0.025</span> <span class="sc">-</span> (<span class="fl">0.025</span><span class="sc">*</span><span class="fl">0.1</span>), <span class="fl">0.025</span> <span class="sc">+</span> (<span class="fl">0.025</span><span class="sc">*</span><span class="fl">0.1</span>)), </span>
+<span id="cb42-66"><a href="#cb42-66" aria-hidden="true" tabindex="-1"></a>             <span class="at">linetype=</span><span class="fu">c</span>(<span class="st">"dashed"</span>, <span class="st">"dashed"</span>, <span class="st">"dashed"</span>), <span class="at">color =</span> <span class="fu">c</span>(<span class="st">"red"</span>, <span class="st">"black"</span>, <span class="st">"black"</span>)) <span class="sc">+</span></span>
+<span id="cb42-67"><a href="#cb42-67" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Overall rate p"</span>,</span>
+<span id="cb42-68"><a href="#cb42-68" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"actual alpha level"</span>) <span class="sc">+</span></span>
+<span id="cb42-69"><a href="#cb42-69" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_cartesian</span>(<span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fl">0.032</span>)) <span class="sc">+</span></span>
+<span id="cb42-70"><a href="#cb42-70" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="fu">seq</span>(<span class="fl">0.1</span>, <span class="fl">0.9</span>, <span class="at">by =</span> <span class="fl">0.1</span>)) <span class="sc">+</span></span>
+<span id="cb42-71"><a href="#cb42-71" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Delta of 0.30 and an allocation ratio of 3:1"</span>)</span>
+<span id="cb42-72"><a href="#cb42-72" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-73"><a href="#cb42-73" aria-hidden="true" tabindex="-1"></a>plot_30 <span class="ot">&lt;-</span> plot3<span class="sc">+</span>plot4</span>
+<span id="cb42-74"><a href="#cb42-74" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-75"><a href="#cb42-75" aria-hidden="true" tabindex="-1"></a>plot_15</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><img src="sample_size_binary_pilot_design_files/figure-html/unnamed-chunk-26-1.png" class="img-fluid" width="1152"></p>
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>plot_30</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><img src="sample_size_binary_pilot_design_files/figure-html/unnamed-chunk-26-2.png" class="img-fluid" width="1152"></p>
+</section>
+<section id="b-comparison-of-the-actual-alpha-level-for-fixed-vs.-recalculated-sample-size-for-different-nuisance-parameters-and-with-adjusted-nominal-alpha-level" class="level4">
+<h4 class="anchored" data-anchor-id="b-comparison-of-the-actual-alpha-level-for-fixed-vs.-recalculated-sample-size-for-different-nuisance-parameters-and-with-adjusted-nominal-alpha-level">b, Comparison of the actual alpha level for fixed vs.&nbsp;recalculated sample size for different nuisance parameters and with adjusted nominal alpha level</h4>
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>plot5 <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span></span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>( <span class="fu">aes</span>(<span class="at">x=</span>nuisance, <span class="at">y=</span>adj_alpha_d15_r1, <span class="at">group=</span>fixed_recalc, <span class="at">color=</span>fixed_recalc)) <span class="sc">+</span></span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(</span>
+<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Sample size calculation"</span>,</span>
+<span id="cb44-6"><a href="#cb44-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">values =</span> <span class="fu">c</span>(<span class="st">"darkgreen"</span>, <span class="st">"deepskyblue3"</span>)) <span class="sc">+</span></span>
+<span id="cb44-7"><a href="#cb44-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position=</span><span class="st">"bottom"</span>, </span>
+<span id="cb44-8"><a href="#cb44-8" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>)) <span class="sc">+</span></span>
+<span id="cb44-9"><a href="#cb44-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept=</span> <span class="fu">c</span>(<span class="fl">0.025</span>, <span class="fl">0.025</span> <span class="sc">-</span> (<span class="fl">0.025</span><span class="sc">*</span><span class="fl">0.1</span>), <span class="fl">0.025</span> <span class="sc">+</span> (<span class="fl">0.025</span><span class="sc">*</span><span class="fl">0.1</span>)), </span>
+<span id="cb44-10"><a href="#cb44-10" aria-hidden="true" tabindex="-1"></a>             <span class="at">linetype=</span><span class="fu">c</span>(<span class="st">"dashed"</span>, <span class="st">"dashed"</span>, <span class="st">"dashed"</span>), <span class="at">color =</span> <span class="fu">c</span>(<span class="st">"red"</span>, <span class="st">"black"</span>, <span class="st">"black"</span>)) <span class="sc">+</span></span>
+<span id="cb44-11"><a href="#cb44-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Overall rate p"</span>,</span>
+<span id="cb44-12"><a href="#cb44-12" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"actual alpha level"</span>) <span class="sc">+</span></span>
+<span id="cb44-13"><a href="#cb44-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_cartesian</span>(<span class="at">ylim =</span> <span class="fu">c</span>(<span class="fl">0.01</span>, <span class="fl">0.03</span>)) <span class="sc">+</span></span>
+<span id="cb44-14"><a href="#cb44-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="fu">seq</span>(<span class="fl">0.1</span>, <span class="fl">0.9</span>, <span class="at">by =</span> <span class="fl">0.1</span>)) <span class="sc">+</span></span>
+<span id="cb44-15"><a href="#cb44-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Delta of 0.15 and an allocation ratio of 1:1"</span>)</span>
+<span id="cb44-16"><a href="#cb44-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-17"><a href="#cb44-17" aria-hidden="true" tabindex="-1"></a><span class="do">#######################</span></span>
+<span id="cb44-18"><a href="#cb44-18" aria-hidden="true" tabindex="-1"></a><span class="co"># this looks really weird</span></span>
+<span id="cb44-19"><a href="#cb44-19" aria-hidden="true" tabindex="-1"></a>plot6 <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span></span>
+<span id="cb44-20"><a href="#cb44-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>( <span class="fu">aes</span>(<span class="at">x=</span>nuisance, <span class="at">y=</span>adj_alpha_d15_r3, <span class="at">group=</span>fixed_recalc, <span class="at">color=</span>fixed_recalc)) <span class="sc">+</span></span>
+<span id="cb44-21"><a href="#cb44-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb44-22"><a href="#cb44-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(</span>
+<span id="cb44-23"><a href="#cb44-23" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Sample size calculation"</span>,</span>
+<span id="cb44-24"><a href="#cb44-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">values =</span> <span class="fu">c</span>(<span class="st">"darkgreen"</span>, <span class="st">"deepskyblue3"</span>)) <span class="sc">+</span></span>
+<span id="cb44-25"><a href="#cb44-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position=</span><span class="st">"bottom"</span>, </span>
+<span id="cb44-26"><a href="#cb44-26" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>)) <span class="sc">+</span></span>
+<span id="cb44-27"><a href="#cb44-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept=</span> <span class="fu">c</span>(<span class="fl">0.025</span>, <span class="fl">0.025</span> <span class="sc">-</span> (<span class="fl">0.025</span><span class="sc">*</span><span class="fl">0.1</span>), <span class="fl">0.025</span> <span class="sc">+</span> (<span class="fl">0.025</span><span class="sc">*</span><span class="fl">0.1</span>)), </span>
+<span id="cb44-28"><a href="#cb44-28" aria-hidden="true" tabindex="-1"></a>             <span class="at">linetype=</span><span class="fu">c</span>(<span class="st">"dashed"</span>, <span class="st">"dashed"</span>, <span class="st">"dashed"</span>), <span class="at">color =</span> <span class="fu">c</span>(<span class="st">"red"</span>, <span class="st">"black"</span>, <span class="st">"black"</span>)) <span class="sc">+</span></span>
+<span id="cb44-29"><a href="#cb44-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Overall rate p"</span>,</span>
+<span id="cb44-30"><a href="#cb44-30" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"actual alpha level"</span>) <span class="sc">+</span></span>
+<span id="cb44-31"><a href="#cb44-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_cartesian</span>(<span class="at">ylim =</span> <span class="fu">c</span>(<span class="fl">0.01</span>, <span class="fl">0.03</span>)) <span class="sc">+</span></span>
+<span id="cb44-32"><a href="#cb44-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="fu">seq</span>(<span class="fl">0.1</span>, <span class="fl">0.9</span>, <span class="at">by =</span> <span class="fl">0.1</span>)) <span class="sc">+</span></span>
+<span id="cb44-33"><a href="#cb44-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Delta of 0.15 and an allocation ratio of 3:1"</span>)</span>
+<span id="cb44-34"><a href="#cb44-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-35"><a href="#cb44-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-36"><a href="#cb44-36" aria-hidden="true" tabindex="-1"></a>plot_15 <span class="ot">&lt;-</span> plot5<span class="sc">+</span>plot6</span>
+<span id="cb44-37"><a href="#cb44-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-38"><a href="#cb44-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-39"><a href="#cb44-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-40"><a href="#cb44-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-41"><a href="#cb44-41" aria-hidden="true" tabindex="-1"></a>plot7 <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span></span>
+<span id="cb44-42"><a href="#cb44-42" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>( <span class="fu">aes</span>(<span class="at">x=</span>nuisance, <span class="at">y=</span>adj_alpha_d30_r1, <span class="at">group=</span>fixed_recalc, <span class="at">color=</span>fixed_recalc)) <span class="sc">+</span></span>
+<span id="cb44-43"><a href="#cb44-43" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb44-44"><a href="#cb44-44" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(</span>
+<span id="cb44-45"><a href="#cb44-45" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Sample size calculation"</span>,</span>
+<span id="cb44-46"><a href="#cb44-46" aria-hidden="true" tabindex="-1"></a>    <span class="at">values =</span> <span class="fu">c</span>(<span class="st">"darkgreen"</span>, <span class="st">"deepskyblue3"</span>)) <span class="sc">+</span></span>
+<span id="cb44-47"><a href="#cb44-47" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position=</span><span class="st">"bottom"</span>, </span>
+<span id="cb44-48"><a href="#cb44-48" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>)) <span class="sc">+</span></span>
+<span id="cb44-49"><a href="#cb44-49" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept=</span> <span class="fu">c</span>(<span class="fl">0.025</span>, <span class="fl">0.025</span> <span class="sc">-</span> (<span class="fl">0.025</span><span class="sc">*</span><span class="fl">0.1</span>), <span class="fl">0.025</span> <span class="sc">+</span> (<span class="fl">0.025</span><span class="sc">*</span><span class="fl">0.1</span>)), </span>
+<span id="cb44-50"><a href="#cb44-50" aria-hidden="true" tabindex="-1"></a>             <span class="at">linetype=</span><span class="fu">c</span>(<span class="st">"dashed"</span>, <span class="st">"dashed"</span>, <span class="st">"dashed"</span>), <span class="at">color =</span> <span class="fu">c</span>(<span class="st">"red"</span>, <span class="st">"black"</span>, <span class="st">"black"</span>)) <span class="sc">+</span></span>
+<span id="cb44-51"><a href="#cb44-51" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Overall rate p"</span>,</span>
+<span id="cb44-52"><a href="#cb44-52" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"actual alpha level"</span>) <span class="sc">+</span></span>
+<span id="cb44-53"><a href="#cb44-53" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_cartesian</span>(<span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fl">0.03</span>)) <span class="sc">+</span></span>
+<span id="cb44-54"><a href="#cb44-54" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="fu">seq</span>(<span class="fl">0.1</span>, <span class="fl">0.9</span>, <span class="at">by =</span> <span class="fl">0.1</span>)) <span class="sc">+</span></span>
+<span id="cb44-55"><a href="#cb44-55" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Delta 0f 0.30 and an allocation ratio of 1:1"</span>)</span>
+<span id="cb44-56"><a href="#cb44-56" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-57"><a href="#cb44-57" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-58"><a href="#cb44-58" aria-hidden="true" tabindex="-1"></a>plot8 <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span></span>
+<span id="cb44-59"><a href="#cb44-59" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>( <span class="fu">aes</span>(<span class="at">x=</span>nuisance, <span class="at">y=</span>adj_alpha_d30_r3, <span class="at">group=</span>fixed_recalc, <span class="at">color=</span>fixed_recalc)) <span class="sc">+</span></span>
+<span id="cb44-60"><a href="#cb44-60" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb44-61"><a href="#cb44-61" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(</span>
+<span id="cb44-62"><a href="#cb44-62" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Sample size calculation"</span>,</span>
+<span id="cb44-63"><a href="#cb44-63" aria-hidden="true" tabindex="-1"></a>    <span class="at">values =</span> <span class="fu">c</span>(<span class="st">"darkgreen"</span>, <span class="st">"deepskyblue3"</span>)) <span class="sc">+</span></span>
+<span id="cb44-64"><a href="#cb44-64" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position=</span><span class="st">"bottom"</span>, </span>
+<span id="cb44-65"><a href="#cb44-65" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>)) <span class="sc">+</span></span>
+<span id="cb44-66"><a href="#cb44-66" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept=</span> <span class="fu">c</span>(<span class="fl">0.025</span>, <span class="fl">0.025</span> <span class="sc">-</span> (<span class="fl">0.025</span><span class="sc">*</span><span class="fl">0.1</span>), <span class="fl">0.025</span> <span class="sc">+</span> (<span class="fl">0.025</span><span class="sc">*</span><span class="fl">0.1</span>)), </span>
+<span id="cb44-67"><a href="#cb44-67" aria-hidden="true" tabindex="-1"></a>             <span class="at">linetype=</span><span class="fu">c</span>(<span class="st">"dashed"</span>, <span class="st">"dashed"</span>, <span class="st">"dashed"</span>), <span class="at">color =</span> <span class="fu">c</span>(<span class="st">"red"</span>, <span class="st">"black"</span>, <span class="st">"black"</span>)) <span class="sc">+</span></span>
+<span id="cb44-68"><a href="#cb44-68" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Overall rate p"</span>,</span>
+<span id="cb44-69"><a href="#cb44-69" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"actual alpha level"</span>) <span class="sc">+</span></span>
+<span id="cb44-70"><a href="#cb44-70" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_cartesian</span>(<span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fl">0.03</span>)) <span class="sc">+</span></span>
+<span id="cb44-71"><a href="#cb44-71" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="fu">seq</span>(<span class="fl">0.1</span>, <span class="fl">0.9</span>, <span class="at">by =</span> <span class="fl">0.1</span>)) <span class="sc">+</span></span>
+<span id="cb44-72"><a href="#cb44-72" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Delta 0f 0.30 and an allocation ratio of 3:1"</span>)</span>
+<span id="cb44-73"><a href="#cb44-73" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-74"><a href="#cb44-74" aria-hidden="true" tabindex="-1"></a>plot_30 <span class="ot">&lt;-</span> plot7<span class="sc">+</span>plot8</span>
+<span id="cb44-75"><a href="#cb44-75" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-76"><a href="#cb44-76" aria-hidden="true" tabindex="-1"></a>plot_15</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><img src="sample_size_binary_pilot_design_files/figure-html/unnamed-chunk-27-1.png" class="img-fluid" width="1152"></p>
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>plot_30</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><img src="sample_size_binary_pilot_design_files/figure-html/unnamed-chunk-27-2.png" class="img-fluid" width="1152"></p>
+</section>
+<section id="c-power-for-fixed-vs.-recalculated-sample-size-for-different-nuisance-parameters" class="level4">
+<h4 class="anchored" data-anchor-id="c-power-for-fixed-vs.-recalculated-sample-size-for-different-nuisance-parameters">c, Power for fixed vs.&nbsp;recalculated sample size for different nuisance parameters</h4>
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>plot9 <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span></span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>( <span class="fu">aes</span>(<span class="at">x=</span>nuisance, <span class="at">y=</span>power_d15_r1, <span class="at">group=</span>fixed_recalc, <span class="at">color=</span>fixed_recalc)) <span class="sc">+</span></span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(</span>
+<span id="cb46-5"><a href="#cb46-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Sample size calculation"</span>,</span>
+<span id="cb46-6"><a href="#cb46-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">values =</span> <span class="fu">c</span>(<span class="st">"darkgreen"</span>, <span class="st">"deepskyblue3"</span>)) <span class="sc">+</span></span>
+<span id="cb46-7"><a href="#cb46-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position=</span><span class="st">"bottom"</span>, </span>
+<span id="cb46-8"><a href="#cb46-8" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>)) <span class="sc">+</span></span>
+<span id="cb46-9"><a href="#cb46-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept=</span> <span class="fu">c</span>(<span class="fl">0.8</span>, <span class="fl">0.8</span> <span class="sc">-</span> (<span class="fl">0.8</span><span class="sc">*</span><span class="fl">0.1</span>), <span class="fl">0.8</span> <span class="sc">+</span> (<span class="fl">0.8</span><span class="sc">*</span><span class="fl">0.1</span>)), </span>
+<span id="cb46-10"><a href="#cb46-10" aria-hidden="true" tabindex="-1"></a>             <span class="at">linetype=</span><span class="fu">c</span>(<span class="st">"dashed"</span>, <span class="st">"dashed"</span>, <span class="st">"dashed"</span>), <span class="at">color =</span> <span class="fu">c</span>(<span class="st">"red"</span>, <span class="st">"black"</span>, <span class="st">"black"</span>)) <span class="sc">+</span></span>
+<span id="cb46-11"><a href="#cb46-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Overall rate p"</span>,</span>
+<span id="cb46-12"><a href="#cb46-12" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Power"</span>) <span class="sc">+</span></span>
+<span id="cb46-13"><a href="#cb46-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_cartesian</span>(<span class="at">ylim =</span> <span class="fu">c</span>(<span class="fl">0.6</span>, <span class="dv">1</span>)) <span class="sc">+</span></span>
+<span id="cb46-14"><a href="#cb46-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="fu">seq</span>(<span class="fl">0.1</span>, <span class="fl">0.9</span>, <span class="at">by =</span> <span class="fl">0.1</span>)) <span class="sc">+</span></span>
+<span id="cb46-15"><a href="#cb46-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Delta of 0.15 and an allocation ratio of 1:1"</span>)</span>
+<span id="cb46-16"><a href="#cb46-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb46-17"><a href="#cb46-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb46-18"><a href="#cb46-18" aria-hidden="true" tabindex="-1"></a>plot10 <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span></span>
+<span id="cb46-19"><a href="#cb46-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>( <span class="fu">aes</span>(<span class="at">x=</span>nuisance, <span class="at">y=</span>power_d15_r3, <span class="at">group=</span>fixed_recalc, <span class="at">color=</span>fixed_recalc)) <span class="sc">+</span></span>
+<span id="cb46-20"><a href="#cb46-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb46-21"><a href="#cb46-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(</span>
+<span id="cb46-22"><a href="#cb46-22" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Sample size calculation"</span>,</span>
+<span id="cb46-23"><a href="#cb46-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">values =</span> <span class="fu">c</span>(<span class="st">"darkgreen"</span>, <span class="st">"deepskyblue3"</span>)) <span class="sc">+</span></span>
+<span id="cb46-24"><a href="#cb46-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position=</span><span class="st">"bottom"</span>, </span>
+<span id="cb46-25"><a href="#cb46-25" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>)) <span class="sc">+</span></span>
+<span id="cb46-26"><a href="#cb46-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept=</span> <span class="fu">c</span>(<span class="fl">0.8</span>, <span class="fl">0.8</span> <span class="sc">-</span> (<span class="fl">0.8</span><span class="sc">*</span><span class="fl">0.1</span>), <span class="fl">0.8</span> <span class="sc">+</span> (<span class="fl">0.8</span><span class="sc">*</span><span class="fl">0.1</span>)), </span>
+<span id="cb46-27"><a href="#cb46-27" aria-hidden="true" tabindex="-1"></a>             <span class="at">linetype=</span><span class="fu">c</span>(<span class="st">"dashed"</span>, <span class="st">"dashed"</span>, <span class="st">"dashed"</span>), <span class="at">color =</span> <span class="fu">c</span>(<span class="st">"red"</span>, <span class="st">"black"</span>, <span class="st">"black"</span>)) <span class="sc">+</span></span>
+<span id="cb46-28"><a href="#cb46-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Overall rate p"</span>,</span>
+<span id="cb46-29"><a href="#cb46-29" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"aPower"</span>) <span class="sc">+</span></span>
+<span id="cb46-30"><a href="#cb46-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_cartesian</span>(<span class="at">ylim =</span> <span class="fu">c</span>(<span class="fl">0.6</span>, <span class="dv">1</span>)) <span class="sc">+</span></span>
+<span id="cb46-31"><a href="#cb46-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="fu">seq</span>(<span class="fl">0.1</span>, <span class="fl">0.9</span>, <span class="at">by =</span> <span class="fl">0.1</span>)) <span class="sc">+</span></span>
+<span id="cb46-32"><a href="#cb46-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Delta of 0.15 and an allocation ratio of 3:1"</span>)</span>
+<span id="cb46-33"><a href="#cb46-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb46-34"><a href="#cb46-34" aria-hidden="true" tabindex="-1"></a>plot_15 <span class="ot">&lt;-</span> plot9<span class="sc">+</span>plot10</span>
+<span id="cb46-35"><a href="#cb46-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb46-36"><a href="#cb46-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb46-37"><a href="#cb46-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb46-38"><a href="#cb46-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb46-39"><a href="#cb46-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb46-40"><a href="#cb46-40" aria-hidden="true" tabindex="-1"></a>plot11 <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span></span>
+<span id="cb46-41"><a href="#cb46-41" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>( <span class="fu">aes</span>(<span class="at">x=</span>nuisance, <span class="at">y=</span>power_d30_r1, <span class="at">group=</span>fixed_recalc, <span class="at">color=</span>fixed_recalc)) <span class="sc">+</span></span>
+<span id="cb46-42"><a href="#cb46-42" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb46-43"><a href="#cb46-43" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(</span>
+<span id="cb46-44"><a href="#cb46-44" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Sample size calculation"</span>,</span>
+<span id="cb46-45"><a href="#cb46-45" aria-hidden="true" tabindex="-1"></a>    <span class="at">values =</span> <span class="fu">c</span>(<span class="st">"darkgreen"</span>, <span class="st">"deepskyblue3"</span>)) <span class="sc">+</span></span>
+<span id="cb46-46"><a href="#cb46-46" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position=</span><span class="st">"bottom"</span>, </span>
+<span id="cb46-47"><a href="#cb46-47" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>)) <span class="sc">+</span></span>
+<span id="cb46-48"><a href="#cb46-48" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept=</span> <span class="fu">c</span>(<span class="fl">0.8</span>, <span class="fl">0.8</span> <span class="sc">-</span> (<span class="fl">0.8</span><span class="sc">*</span><span class="fl">0.1</span>), <span class="fl">0.8</span> <span class="sc">+</span> (<span class="fl">0.8</span><span class="sc">*</span><span class="fl">0.1</span>)), </span>
+<span id="cb46-49"><a href="#cb46-49" aria-hidden="true" tabindex="-1"></a>             <span class="at">linetype=</span><span class="fu">c</span>(<span class="st">"dashed"</span>, <span class="st">"dashed"</span>, <span class="st">"dashed"</span>), <span class="at">color =</span> <span class="fu">c</span>(<span class="st">"red"</span>, <span class="st">"black"</span>, <span class="st">"black"</span>)) <span class="sc">+</span></span>
+<span id="cb46-50"><a href="#cb46-50" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Overall rate p"</span>,</span>
+<span id="cb46-51"><a href="#cb46-51" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Power"</span>) <span class="sc">+</span></span>
+<span id="cb46-52"><a href="#cb46-52" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="fu">seq</span>(<span class="fl">0.1</span>, <span class="fl">0.9</span>, <span class="at">by =</span> <span class="fl">0.1</span>)) <span class="sc">+</span></span>
+<span id="cb46-53"><a href="#cb46-53" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Delta 0f 0.30 and an allocation ratio of 1:1"</span>)</span>
+<span id="cb46-54"><a href="#cb46-54" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb46-55"><a href="#cb46-55" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb46-56"><a href="#cb46-56" aria-hidden="true" tabindex="-1"></a>plot12 <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span></span>
+<span id="cb46-57"><a href="#cb46-57" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>( <span class="fu">aes</span>(<span class="at">x=</span>nuisance, <span class="at">y=</span>power_d30_r3, <span class="at">group=</span>fixed_recalc, <span class="at">color=</span>fixed_recalc)) <span class="sc">+</span></span>
+<span id="cb46-58"><a href="#cb46-58" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb46-59"><a href="#cb46-59" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(</span>
+<span id="cb46-60"><a href="#cb46-60" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Sample size calculation"</span>,</span>
+<span id="cb46-61"><a href="#cb46-61" aria-hidden="true" tabindex="-1"></a>    <span class="at">values =</span> <span class="fu">c</span>(<span class="st">"darkgreen"</span>, <span class="st">"deepskyblue3"</span>)) <span class="sc">+</span></span>
+<span id="cb46-62"><a href="#cb46-62" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position=</span><span class="st">"bottom"</span>, </span>
+<span id="cb46-63"><a href="#cb46-63" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>)) <span class="sc">+</span></span>
+<span id="cb46-64"><a href="#cb46-64" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept=</span> <span class="fu">c</span>(<span class="fl">0.8</span>, <span class="fl">0.8</span> <span class="sc">-</span> (<span class="fl">0.8</span><span class="sc">*</span><span class="fl">0.1</span>), <span class="fl">0.8</span> <span class="sc">+</span> (<span class="fl">0.8</span><span class="sc">*</span><span class="fl">0.1</span>)), </span>
+<span id="cb46-65"><a href="#cb46-65" aria-hidden="true" tabindex="-1"></a>             <span class="at">linetype=</span><span class="fu">c</span>(<span class="st">"dashed"</span>, <span class="st">"dashed"</span>, <span class="st">"dashed"</span>), <span class="at">color =</span> <span class="fu">c</span>(<span class="st">"red"</span>, <span class="st">"black"</span>, <span class="st">"black"</span>)) <span class="sc">+</span></span>
+<span id="cb46-66"><a href="#cb46-66" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Overall rate p"</span>,</span>
+<span id="cb46-67"><a href="#cb46-67" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Power"</span>) <span class="sc">+</span></span>
+<span id="cb46-68"><a href="#cb46-68" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="fu">seq</span>(<span class="fl">0.1</span>, <span class="fl">0.9</span>, <span class="at">by =</span> <span class="fl">0.1</span>)) <span class="sc">+</span></span>
+<span id="cb46-69"><a href="#cb46-69" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Delta 0f 0.30 and an allocation ratio of 3:1"</span>)</span>
+<span id="cb46-70"><a href="#cb46-70" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb46-71"><a href="#cb46-71" aria-hidden="true" tabindex="-1"></a>plot_30 <span class="ot">&lt;-</span> plot11<span class="sc">+</span>plot12</span>
+<span id="cb46-72"><a href="#cb46-72" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb46-73"><a href="#cb46-73" aria-hidden="true" tabindex="-1"></a>plot_15</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><img src="sample_size_binary_pilot_design_files/figure-html/unnamed-chunk-28-1.png" class="img-fluid" width="1152"></p>
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>plot_30</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><img src="sample_size_binary_pilot_design_files/figure-html/unnamed-chunk-28-2.png" class="img-fluid" width="1152"></p>
+</section>
+<section id="delta-0.15-ratio-11" class="level4">
+<h4 class="anchored" data-anchor-id="delta-0.15-ratio-11">Delta 0.15, ratio 1:1</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 1, delta = 0.15, </span></span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a><span class="co"># ratio 1:1</span></span>
+<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a>design <span class="ot">&lt;-</span> <span class="fu">setupChiSquare</span>(<span class="at">alpha =</span> <span class="fl">0.025</span>, <span class="at">beta =</span> <span class="fl">0.2</span>, <span class="at">r =</span> <span class="dv">1</span>, <span class="at">delta =</span> <span class="fl">0.15</span>,</span>
+<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a>                         <span class="at">alternative =</span> <span class="st">"smaller"</span>)</span>
+<span id="cb48-6"><a href="#cb48-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-7"><a href="#cb48-7" aria-hidden="true" tabindex="-1"></a>nuisance <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="at">from =</span> <span class="fl">0.1</span>, <span class="at">to =</span> <span class="fl">0.9</span>, <span class="at">by =</span> <span class="fl">0.05</span>)</span>
+<span id="cb48-8"><a href="#cb48-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-9"><a href="#cb48-9" aria-hidden="true" tabindex="-1"></a><span class="co"># different values of the nuisance parameter</span></span>
+<span id="cb48-10"><a href="#cb48-10" aria-hidden="true" tabindex="-1"></a><span class="fu">n_dist</span>(<span class="at">design =</span> design, <span class="at">n1 =</span> <span class="dv">158</span>, <span class="at">nuisance =</span> nuisance, <span class="at">summary =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb48-11"><a href="#cb48-11" aria-hidden="true" tabindex="-1"></a>       <span class="at">plot =</span> <span class="cn">TRUE</span>, <span class="at">recalculation =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="sample_size_binary_pilot_design_files/figure-html/unnamed-chunk-29-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="co"># different values of n1</span></span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a>n1_vec <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">60</span>, <span class="dv">250</span>, <span class="at">by =</span> <span class="dv">30</span>)</span>
+<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a><span class="fu">n_dist</span>(<span class="at">design =</span> design, <span class="at">n1 =</span> n1_vec, <span class="at">nuisance =</span> <span class="fl">0.467</span>, <span class="at">summary =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb49-4"><a href="#cb49-4" aria-hidden="true" tabindex="-1"></a>       <span class="at">plot =</span> <span class="cn">TRUE</span>, <span class="at">recalculation =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="sample_size_binary_pilot_design_files/figure-html/unnamed-chunk-29-2.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="delta-0.15-ratio-31" class="level4">
+<h4 class="anchored" data-anchor-id="delta-0.15-ratio-31">Delta = 0.15, ratio 3:1</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>design <span class="ot">&lt;-</span> <span class="fu">setupChiSquare</span>(<span class="at">alpha =</span> <span class="fl">0.025</span>, <span class="at">beta =</span> <span class="fl">0.2</span>, <span class="at">r =</span> <span class="dv">3</span>, <span class="at">delta =</span> <span class="fl">0.15</span>,</span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>                         <span class="at">alternative =</span> <span class="st">"smaller"</span>)</span>
+<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-4"><a href="#cb50-4" aria-hidden="true" tabindex="-1"></a>nuisance <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="at">from =</span> <span class="fl">0.1</span>, <span class="at">to =</span> <span class="fl">0.9</span>, <span class="at">by =</span> <span class="fl">0.05</span>)</span>
+<span id="cb50-5"><a href="#cb50-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-6"><a href="#cb50-6" aria-hidden="true" tabindex="-1"></a><span class="co"># different values of the nuisance parameter</span></span>
+<span id="cb50-7"><a href="#cb50-7" aria-hidden="true" tabindex="-1"></a><span class="fu">n_dist</span>(<span class="at">design =</span> design, <span class="at">n1 =</span> <span class="dv">236</span>, <span class="at">nuisance =</span> nuisance, <span class="at">summary =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb50-8"><a href="#cb50-8" aria-hidden="true" tabindex="-1"></a>       <span class="at">plot =</span> <span class="cn">TRUE</span>, <span class="at">recalculation =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="sample_size_binary_pilot_design_files/figure-html/unnamed-chunk-30-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="co"># different values of n1</span></span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>n1_vec <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">64</span>, <span class="dv">96</span>, <span class="dv">124</span>, <span class="dv">156</span>, <span class="dv">188</span>, <span class="dv">220</span>, <span class="dv">236</span>)</span>
+<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a><span class="fu">n_dist</span>(<span class="at">design =</span> design, <span class="at">n1 =</span> n1_vec, <span class="at">nuisance =</span> <span class="fl">0.467</span>, <span class="at">summary =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb51-4"><a href="#cb51-4" aria-hidden="true" tabindex="-1"></a>       <span class="at">plot =</span> <span class="cn">TRUE</span>, <span class="at">recalculation =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="sample_size_binary_pilot_design_files/figure-html/unnamed-chunk-30-2.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="delta-0.3-ratio-11" class="level4">
+<h4 class="anchored" data-anchor-id="delta-0.3-ratio-11">Delta = 0.3, ratio 1:1</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>design <span class="ot">&lt;-</span> <span class="fu">setupChiSquare</span>(<span class="at">alpha =</span> <span class="fl">0.025</span>, <span class="at">beta =</span> <span class="fl">0.2</span>, <span class="at">r =</span> <span class="dv">1</span>, <span class="at">delta =</span> <span class="fl">0.3</span>,</span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a>                         <span class="at">alternative =</span> <span class="st">"smaller"</span>)</span>
+<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb52-4"><a href="#cb52-4" aria-hidden="true" tabindex="-1"></a>nuisance <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="at">from =</span> <span class="fl">0.2</span>, <span class="at">to =</span> <span class="fl">0.8</span>, <span class="at">by =</span> <span class="fl">0.05</span>)</span>
+<span id="cb52-5"><a href="#cb52-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb52-6"><a href="#cb52-6" aria-hidden="true" tabindex="-1"></a><span class="co"># different values of the nuisance parameter</span></span>
+<span id="cb52-7"><a href="#cb52-7" aria-hidden="true" tabindex="-1"></a><span class="fu">n_dist</span>(<span class="at">design =</span> design, <span class="at">n1 =</span> <span class="dv">34</span>, <span class="at">nuisance =</span> nuisance, <span class="at">summary =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb52-8"><a href="#cb52-8" aria-hidden="true" tabindex="-1"></a>       <span class="at">plot =</span> <span class="cn">TRUE</span>, <span class="at">recalculation =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="sample_size_binary_pilot_design_files/figure-html/unnamed-chunk-31-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="co"># different values of n1</span></span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>n1_vec <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">20</span>, <span class="dv">120</span>, <span class="at">by =</span> <span class="dv">20</span>)</span>
+<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a><span class="fu">n_dist</span>(<span class="at">design =</span> design, <span class="at">n1 =</span> n1_vec, <span class="at">nuisance =</span> <span class="fl">0.467</span>, <span class="at">summary =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb53-4"><a href="#cb53-4" aria-hidden="true" tabindex="-1"></a>       <span class="at">plot =</span> <span class="cn">TRUE</span>, <span class="at">recalculation =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="sample_size_binary_pilot_design_files/figure-html/unnamed-chunk-31-2.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="delta-0.3-ratio-31" class="level4">
+<h4 class="anchored" data-anchor-id="delta-0.3-ratio-31">Delta = 0.3 ratio 3:1</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>design <span class="ot">&lt;-</span> <span class="fu">setupChiSquare</span>(<span class="at">alpha =</span> <span class="fl">0.025</span>, <span class="at">beta =</span> <span class="fl">0.2</span>, <span class="at">r =</span> <span class="dv">3</span>, <span class="at">delta =</span> <span class="fl">0.3</span>,</span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>                         <span class="at">alternative =</span> <span class="st">"smaller"</span>)</span>
+<span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb54-4"><a href="#cb54-4" aria-hidden="true" tabindex="-1"></a>nuisance <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="at">from =</span> <span class="fl">0.1</span>, <span class="at">to =</span> <span class="fl">0.9</span>, <span class="at">by =</span> <span class="fl">0.05</span>)</span>
+<span id="cb54-5"><a href="#cb54-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb54-6"><a href="#cb54-6" aria-hidden="true" tabindex="-1"></a><span class="co"># different values of the nuisance parameter</span></span>
+<span id="cb54-7"><a href="#cb54-7" aria-hidden="true" tabindex="-1"></a><span class="fu">n_dist</span>(<span class="at">design =</span> design, <span class="at">n1 =</span> <span class="dv">44</span>, <span class="at">nuisance =</span> nuisance, <span class="at">summary =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb54-8"><a href="#cb54-8" aria-hidden="true" tabindex="-1"></a>       <span class="at">plot =</span> <span class="cn">TRUE</span>, <span class="at">recalculation =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="sample_size_binary_pilot_design_files/figure-html/unnamed-chunk-32-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="co"># different values of n1</span></span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a>n1_vec <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">24</span>, <span class="dv">48</span>, <span class="dv">64</span>, <span class="dv">84</span> ,<span class="dv">92</span>)</span>
+<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a><span class="fu">n_dist</span>(<span class="at">design =</span> design, <span class="at">n1 =</span> n1_vec, <span class="at">nuisance =</span> <span class="fl">0.467</span>, <span class="at">summary =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb55-4"><a href="#cb55-4" aria-hidden="true" tabindex="-1"></a>       <span class="at">plot =</span> <span class="cn">TRUE</span>, <span class="at">recalculation =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="sample_size_binary_pilot_design_files/figure-html/unnamed-chunk-32-2.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
